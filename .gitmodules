@@ -1,0 +1,7 @@
+[submodule "3rd_party/imgui/imgui"]
+	path = 3rd_party/imgui/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "3rd_party/glad2_loader/glad"]
+	path = 3rd_party/glad2_loader/glad
+    url = https://github.com/Dav1dde/glad
+    branch = glad2
