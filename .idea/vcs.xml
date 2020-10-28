@@ -2,5 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/3rd_party/glad2_loader/glad" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/3rd_party/imgui/imgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/3rd_party/spdlog_logger/spdlog" vcs="Git" />
   </component>
 </project>
