@@ -13,8 +13,7 @@ else()
 endif()
 
 add_library(${PROJECT_NAME}
-    INTERFACE
-)
+    INTERFACE)
 
 target_link_libraries(${PROJECT_NAME}
     INTERFACE

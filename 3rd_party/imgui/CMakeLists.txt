@@ -24,8 +24,7 @@ target_compile_definitions(${PROJECT_NAME}
     IMGUI_IMPL_OPENGL_LOADER_GLAD2)
 
 target_include_directories(${PROJECT_NAME}
-    PUBLIC
-    imgui)
+    PUBLIC imgui .)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE sdl2 glad2_loader)
