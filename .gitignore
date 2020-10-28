@@ -236,3 +236,5 @@ tags
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,cmake,clion,vscode,vim,emacs
 
+# Project build
+build/*
