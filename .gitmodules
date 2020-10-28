@@ -1,0 +1,11 @@
+[submodule "3rd_party/imgui/imgui"]
+	path = 3rd_party/imgui/imgui
+	url = https://github.com/ocornut/imgui
+	branch = docking
+[submodule "3rd_party/glad2_loader/glad"]
+	path = 3rd_party/glad2_loader/glad
+    url = https://github.com/Dav1dde/glad
+    branch = glad2
+[submodule "3rd_party/spdlog_logger/spdlog"]
+	path = 3rd_party/spdlog_logger/spdlog
+	url = https://github.com/gabime/spdlog
