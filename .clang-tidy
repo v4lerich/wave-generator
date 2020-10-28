@@ -10,7 +10,8 @@ Checks: '
     readability-*,
     clang-analyzer-*,
     cppcoreguidelines-*,
-    -hicpp-*,'
+    -hicpp-*,
+    -google-readability-namespace-comments'
 
 AnalyzeTemporaryDtors: true
 

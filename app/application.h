@@ -1,18 +1,23 @@
-#ifndef WAVE_GENERATOR_APPLICATION_H
-#define WAVE_GENERATOR_APPLICATION_H
+#ifndef WAVEGENERATOR_APPLICATION_H
+#define WAVEGENERATOR_APPLICATION_H
 
 #include <SDL.h>
 #include <imgui/imgui.h>
+#include <view.h>
 
 #include <memory>
+#include <vector>
 
 namespace wave_generator {
+
+using view::View;
 
 class Application {
   public:
     using ReturnCode = int;
 
     Application(int argc, char **argv);
+    void AddView(std::unique_ptr<View> view);
     auto Init() -> ReturnCode;
     auto Run() -> ReturnCode;
 
@@ -31,11 +36,9 @@ class Application {
     ImGuiIO* imgui_io_{};
     bool done_{};
 
-    bool show_demo_window_{true};
-    bool show_another_window_{true};
-    ImVec4 clear_color_ = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    std::vector<std::unique_ptr<View>> views_{};
 };
 
-}  // namespace wave_generator
+}
 
-#endif  // WAVE_GENERATOR_APPLICATION_H
+#endif  // WAVEGENERATOR_APPLICATION_H
