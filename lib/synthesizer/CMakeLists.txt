@@ -7,6 +7,7 @@ add_library(${PROJECT_NAME}
     triangular_generator.h triangular_generator.cc
     amplitude_frequency_generator.h amplitude_frequency_generator.cc
     white_noise_generator.h white_noise_generator.cc
+    pulse_generator.h pulse_generator.cc
     constant_generator.h constant_generator.cc
     integrator.h integrator.cc
     )
