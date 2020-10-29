@@ -8,6 +8,6 @@ auto ConstantGenerator::SampleAfter(double /*step*/) -> double {
     return value_;
 }
 
-void ConstantGenerator::Reset(double position) {}
+void ConstantGenerator::Reset() {}
 
 }  // namespace wave_generator::synthesizer

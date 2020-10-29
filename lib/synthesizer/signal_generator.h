@@ -8,7 +8,7 @@ namespace wave_generator::synthesizer {
 class SignalGenerator {
   public:
     virtual auto SampleAfter(double step) -> double;
-    virtual void Reset(double position);
+    virtual void Reset();
 
   protected:
     void MovePosition(double step);

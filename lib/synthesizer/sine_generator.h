@@ -3,27 +3,18 @@
 
 #include <memory>
 
-#include "signal_generator.h"
+#include "amplitude_frequency_generator.h"
 
 namespace wave_generator::synthesizer {
 
-class SineGenerator : public SignalGenerator {
+class SineGenerator : public AmplitudeFrequencyGenerator {
   public:
     SineGenerator(double base_frequency, double base_amplitude,
                   std::unique_ptr<SignalGenerator> amplitude_signal,
-                  std::unique_ptr<SignalGenerator> frequency_signal,
-                  std::unique_ptr<SignalGenerator> phase_signal);
+                  std::unique_ptr<SignalGenerator> frequency_signal);
 
-    auto SampleAfter(double step) -> double override;
-    void Reset(double position) override;
-
-  private:
-    std::unique_ptr<SignalGenerator> accumulated_phase_;
-
-    double base_amplitude_;
-    double base_frequency_;
-    std::unique_ptr<SignalGenerator> amplitude_;
-    std::unique_ptr<SignalGenerator> phase_;
+  protected:
+    auto Evaluate(double phase) -> double override;
 };
 
 }  // namespace wave_generator::synthesizer

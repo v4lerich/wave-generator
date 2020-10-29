@@ -13,6 +13,6 @@ auto SignalGenerator::SampleAfter(double step) -> double {
     return position_;
 }
 
-void SignalGenerator::Reset(double position) { ResetPosition(position); }
+void SignalGenerator::Reset() { ResetPosition(0); }
 
 }  // namespace wave_generator::synthesizer

@@ -10,7 +10,7 @@ class ConstantGenerator : public SignalGenerator {
     explicit ConstantGenerator(double value);
 
     auto SampleAfter(double step) -> double override;
-    void Reset(double position) override;
+    void Reset() override;
 
   private:
     double value_;

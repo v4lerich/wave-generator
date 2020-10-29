@@ -5,8 +5,8 @@ namespace wave_generator::synthesizer {
 Integrator::Integrator(std::unique_ptr<SignalGenerator> signal)
     : signal_{std::move(signal)}, integration_value_{0} {}
 
-void Integrator::Reset(double position) {
-    SignalGenerator::Reset(position);
+void Integrator::Reset() {
+    SignalGenerator::Reset();
     integration_value_ = 0;
 }
 

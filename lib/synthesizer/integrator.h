@@ -12,7 +12,7 @@ class Integrator : public SignalGenerator {
     explicit Integrator(std::unique_ptr<SignalGenerator> signal);
 
     auto SampleAfter(double step) -> double override;
-    void Reset(double position) override;
+    void Reset() override;
 
   private:
     double integration_value_;
