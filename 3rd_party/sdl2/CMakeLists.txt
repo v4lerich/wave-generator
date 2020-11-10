@@ -4,18 +4,15 @@ if(TARGET ${PROJECT_NAME})
     return()
 endif()
 
-find_package(SDL2 REQUIRED)
-
-if(SDL2_FOUND)
-    message("SDL2 found")
-else()
-    message(FATAL_ERROR "Cannot find SDL2")
-endif()
+set(SDL_STATIC ON CACHE BOOL "" FORCE)
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+add_subdirectory(SDL EXCLUDE_FROM_ALL)
 
 add_library(${PROJECT_NAME}
     INTERFACE)
 
 target_link_libraries(${PROJECT_NAME}
-    INTERFACE
-    SDL2::SDL2
-)
+    INTERFACE SDL2-static)
+
+target_compile_definitions(${PROJECT_NAME}
+    INTERFACE SDL_MAIN_HANDLED)

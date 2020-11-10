@@ -4,9 +4,6 @@ if(TARGET ${PROJECT_NAME})
     return()
 endif()
 
-add_subdirectory(external/sdl2)
-add_subdirectory(external/glad2_loader)
-
 add_library(${PROJECT_NAME}
     STATIC
     imgui/imgui.h

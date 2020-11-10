@@ -15,7 +15,7 @@ SawtoothGenerator::SawtoothGenerator(double base_amplitude,
                                   std::move(amplitude), std::move(frequency)) {}
 
 auto SawtoothGenerator::Evaluate(double phase) -> double {
-    return -M_2_PI * atan(1 / tan(M_PI * phase))
+    return -M_2_PI * atan(1 / tan(M_PI * phase));
 }
 
 }  // namespace wave_generator::synthesizer
