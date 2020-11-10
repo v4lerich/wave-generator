@@ -1,7 +1,8 @@
 project(wave-generator-view)
 
 add_library(${PROJECT_NAME}
-    view.h demo_view.cpp demo_view.h)
+    view.h view.cpp
+    synthesizer_view.cpp synthesizer_view.h)
 
 add_library(wave-generator::view
     ALIAS ${PROJECT_NAME})

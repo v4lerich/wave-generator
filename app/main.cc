@@ -1,5 +1,5 @@
 #include "application.h"
-#include "demo_view.h"
+#include "synthesizer_view.h"
 
 namespace view = wave_generator::view;
 
@@ -9,7 +9,7 @@ auto main(int argc, char** argv) -> int {
     auto return_code = application.Init();
     if (return_code != 0) return return_code;
 
-    std::unique_ptr<view::View> view = std::make_unique<view::DemoView>();
+    std::unique_ptr<view::View> view = std::make_unique<view::SynthesizerView>();
 
     application.AddView(std::move(view));
     return_code = application.Run();

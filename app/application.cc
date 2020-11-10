@@ -120,9 +120,12 @@ void Application::RenderView() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame(main_window_);
     ImGui::NewFrame();
+    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 
     for (auto& view : views_) {
         view->Render();
+        if (view->WantClose())
+            done_ = true;
     }
 
     ImGui::Render();
