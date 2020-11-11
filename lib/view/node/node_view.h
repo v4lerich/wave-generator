@@ -2,20 +2,34 @@
 #define WAVEGENERATOR_NODE_VIEW_H
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <view.h>
 
 #include <string>
 
 namespace wave_generator::view::node {
 
-class NodeView : public View {
+class NodeView {
   public:
-    void Render() override;
+    explicit NodeView(ImVec2 position = {});
+    void Render(ImDrawList* draw_list, ImVec2 offset = {});
+
+    auto GetID() -> int;
 
   protected:
-    virtual const std::string& GetName() = 0;
+    virtual auto GetName() -> const std::string& = 0;
 
-    ImVec2 position{};
+  private:
+    static auto GenerateId() -> int;
+
+    static const ImRect kPadding;
+    static int id_counter_;
+    static const ImColor kBackgroundColor;
+    static const ImColor kBorderColor;
+
+    ImVec2 position_{};
+    ImVec2 size_{};
+    int id_;
 };
 
 }  // namespace wave_generator::view::node

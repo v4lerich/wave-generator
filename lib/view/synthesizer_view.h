@@ -1,11 +1,12 @@
 #ifndef WAVEGENERATOR_SYNTHESIZER_VIEW_H
 #define WAVEGENERATOR_SYNTHESIZER_VIEW_H
 
-#include <memory>
 #include <imgui.h>
 
-#include "view.h"
+#include <memory>
+
 #include "editor_view.h"
+#include "view.h"
 
 namespace wave_generator::view {
 

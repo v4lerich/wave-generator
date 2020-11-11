@@ -4,8 +4,12 @@
 
 namespace wave_generator::view::node {
 
-ConstantGeneratorNodeView::ConstantGeneratorNodeView(
-    std::shared_ptr<synthesizer::ConstantGenerator> generator)
-    : generator(std::move(generator)) {}
+const std::string ConstantGeneratorNodeView::kNodeName = "Constant";
 
+ConstantGeneratorNodeView::ConstantGeneratorNodeView(ImVec2 position)
+    : NodeView(position) {}
+
+auto ConstantGeneratorNodeView::GetName() -> const std::string& {
+    return kNodeName;
+}
 }  // namespace wave_generator::view::node

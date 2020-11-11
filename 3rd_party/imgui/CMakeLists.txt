@@ -17,8 +17,8 @@ add_library(${PROJECT_NAME}
     imgui/backends/imgui_impl_sdl.cpp)
 
 target_compile_definitions(${PROJECT_NAME}
-    PRIVATE
-    IMGUI_IMPL_OPENGL_LOADER_GLAD2)
+    PRIVATE IMGUI_IMPL_OPENGL_LOADER_GLAD2
+    PUBLIC IMGUI_DEFINE_MATH_OPERATORS)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC imgui .)

@@ -1,20 +1,23 @@
 #ifndef WAVEGENERATOR_NODE_VIEWS_H
 #define WAVEGENERATOR_NODE_VIEWS_H
 
-#include "../../synthesizer/constant_generator.h"
-#include "node_view.h"
+#include <constant_generator.h>
 
 #include <memory>
 
+#include "node_view.h"
+
 namespace wave_generator::view::node {
 
-class ConstantGeneratorNodeView : public NodeView {
+class ConstantGeneratorNodeView final : public NodeView {
   public:
-    explicit ConstantGeneratorNodeView(
-        std::shared_ptr<synthesizer::ConstantGenerator> generator);
+    ConstantGeneratorNodeView(ImVec2 position = {});
 
   protected:
-    std::shared_ptr<synthesizer::ConstantGenerator> generator;
+    auto GetName() -> const std::string& override;
+
+  private:
+    static const std::string kNodeName;
 };
 
 }  // namespace wave_generator::view::node

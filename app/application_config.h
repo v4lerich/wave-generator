@@ -1,7 +1,7 @@
 #ifndef WAVEGENERATOR_APPLICATION_CONFIG_H
 #define WAVEGENERATOR_APPLICATION_CONFIG_H
 
-#include <spdlog/spdlog.h>
+#include <SDL_log.h>
 
 namespace wave_generator::config {
 
@@ -26,10 +26,10 @@ constexpr auto kOpenGlVersion = OpenGlVersion { .major = 4, .minor = 2 };
 constexpr auto kGlslVersion = "#version 420";
 
 constexpr auto kLogLevel =
-#ifndef NDEBUG
-    spdlog::level::info;
+#ifdef NDEBUG
+    SDL_LogPriority::SDL_LOG_PRIORITY_WARN;
 #else
-    spdlog::level::trace;
+    SDL_LogPriority::SDL_LOG_PRIORITY_INFO;
 #endif
 
 }
