@@ -5,8 +5,8 @@ add_library(${PROJECT_NAME}
     synthesizer_view.cc synthesizer_view.h
     editor_view.cc editor_view.h
     node/node_view.cc node/node_view.h
-    node/node_input_view.cc node/node_input_view.h
-    node/node_views.cc node/node_views.h node/node_input_views.cc node/node_input_views.h)
+    node/node_port_view.cc node/node_port_view.h
+    node/node_views.cc node/node_views.h node/node_port_views.cc node/node_port_views.h)
 
 add_library(wave-generator::view
     ALIAS ${PROJECT_NAME})

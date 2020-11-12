@@ -35,8 +35,8 @@ void SynthesizerView::BeginDockingWindow() {
                     ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground;
 
     bool show_dock_window = true;
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0F);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{});
     ImGui::Begin("DockSpace Demo", &show_dock_window, window_flags);
     ImGui::PopStyleVar();
 
@@ -47,7 +47,7 @@ void SynthesizerView::BeginDockingWindow() {
 }
 
 void SynthesizerView::InitDockingLayout() {
-    if (!ImGui::DockBuilderGetNode(ImGui::GetID(kDockspaceName.c_str()))) {
+    if (ImGui::DockBuilderGetNode(ImGui::GetID(kDockspaceName.c_str())) == nullptr) {
         ImGuiID dockspace_id = ImGui::GetID(kDockspaceName.c_str());
         ImGui::DockBuilderRemoveNode(dockspace_id);
         ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
@@ -56,7 +56,7 @@ void SynthesizerView::InitDockingLayout() {
 
         ImGuiID dock_main_id = dockspace_id;
         ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(
-            dock_main_id, ImGuiDir_Left, 0.20f, nullptr, &dock_main_id);
+            dock_main_id, ImGuiDir_Left, 0.20F, nullptr, &dock_main_id);
 
         ImGui::DockBuilderDockWindow(editor_view_->WindowName().c_str(),
                                      dock_main_id);
@@ -73,7 +73,9 @@ void SynthesizerView::EndDockingWindow() {
 void SynthesizerView::RenderMenuBar() {
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
-            if (ImGui::MenuItem("Exit", nullptr, false)) SetWantClose();
+            if (ImGui::MenuItem("Exit", nullptr, false)) {
+                SetWantClose();
+            }
             ImGui::EndMenu();
         }
         ImGui::EndMenuBar();

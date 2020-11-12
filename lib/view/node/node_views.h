@@ -5,32 +5,39 @@
 
 #include <memory>
 
-#include "node_input_views.h"
+#include "node_port_views.h"
 #include "node_view.h"
 
 namespace wave_generator::view::node {
 
-class ConstantGeneratorNodeView final : public NodeView {
+class SignalGeneratorNodeView : public NodeView {
+  public:
+    explicit SignalGeneratorNodeView(std::string name, ImVec2 position = {});
+    virtual auto CreateGenerator() -> std::unique_ptr<synthesizer::SignalGenerator> = 0;
+};
+
+class ConstantGeneratorNodeView final : public SignalGeneratorNodeView {
   public:
     explicit ConstantGeneratorNodeView(ImVec2 position = {});
 
   protected:
-    auto GetName() -> const std::string& override;
+    auto GetOutputViews() -> std::vector<NodeOutputView *> override;
+    auto CreateGenerator() -> std::unique_ptr<synthesizer::SignalGenerator> override;
 
   private:
-    static const std::string kNodeName;
+    float value_;
+    node::NodeOutputView output_node_;
 };
 
-class SineWaveGeneratorNodeView final : public NodeView {
+class SineWaveGeneratorNodeView final : public SignalGeneratorNodeView {
   public:
     explicit SineWaveGeneratorNodeView(ImVec2 position = {});
+    auto CreateGenerator() -> std::unique_ptr<synthesizer::SignalGenerator> override;
 
   protected:
-    auto GetName() -> const std::string & override;
-    auto GetInputViews() -> std::vector<const NodeInputView*> override;
+    auto GetInputViews() -> std::vector<NodeInputView*> override;
 
   private:
-    static const std::string kNodeName;
     node::SignalNodeInputView amplitude_input_node_;
 };
 

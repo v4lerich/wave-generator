@@ -4,26 +4,34 @@
 
 namespace wave_generator::view::node {
 
-const std::string ConstantGeneratorNodeView::kNodeName = "Constant";
+SignalGeneratorNodeView::SignalGeneratorNodeView(std::string name,
+                                                 ImVec2 position)
+    : NodeView(std::move(name), position) {}
+
 
 ConstantGeneratorNodeView::ConstantGeneratorNodeView(ImVec2 position)
-    : NodeView{position} {}
+    : SignalGeneratorNodeView{"Constant", position}, value_{1.0F}, output_node_{*this} {}
 
-auto ConstantGeneratorNodeView::GetName() -> const std::string& {
-    return kNodeName;
+auto ConstantGeneratorNodeView::GetOutputViews() -> std::vector<NodeOutputView*> {
+    return {&output_node_};
 }
 
-const std::string SineWaveGeneratorNodeView::kNodeName = "Constant";
+auto ConstantGeneratorNodeView::CreateGenerator()
+    -> std::unique_ptr<synthesizer::SignalGenerator> {
+    return std::make_unique<synthesizer::ConstantGenerator>(value_);
+}
+
 
 SineWaveGeneratorNodeView::SineWaveGeneratorNodeView(ImVec2 position)
-    : NodeView{position}, amplitude_input_node_{"amplitude"} {}
+    : SignalGeneratorNodeView{"Sina", position}, amplitude_input_node_{*this, "amplitude"} {}
 
-auto SineWaveGeneratorNodeView::GetName() -> const std::string& {
-    return kNodeName;
+auto SineWaveGeneratorNodeView::GetInputViews() -> std::vector<NodeInputView*> {
+    return {&amplitude_input_node_};
 }
 
-auto SineWaveGeneratorNodeView::GetInputViews() -> std::vector<const NodeInputView*> {
-    return {&amplitude_input_node_};
+auto SineWaveGeneratorNodeView::CreateGenerator()
+    -> std::unique_ptr<synthesizer::SignalGenerator> {
+    return nullptr;
 }
 
 }  // namespace wave_generator::view::node

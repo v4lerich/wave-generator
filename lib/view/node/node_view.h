@@ -8,38 +8,39 @@
 #include <string>
 #include <vector>
 
-#include "node_input_view.h"
+#include "node_port_view.h"
 
 namespace wave_generator::view::node {
 
 class NodeView {
+    friend class NodeInputView;
+    friend class NodeOutputView;
+
   public:
-    explicit NodeView(ImVec2 position = {});
-    void Render(ImDrawList* draw_list, ImVec2 offset = {});
+    explicit NodeView(std::string name, ImVec2 position = {});
+    void Render(ImDrawList *draw_list, ImVec2 offset = {});
 
     auto GetID() -> int;
 
   protected:
-    virtual auto GetName() -> const std::string& = 0;
-    virtual auto GetInputViews() -> std::vector<const NodeInputView*>;
+    virtual auto GetInputViews() -> std::vector<NodeInputView*>;
+    virtual auto GetOutputViews() -> std::vector<NodeOutputView*>;
 
   private:
     static auto GenerateId() -> int;
+    static auto GetPadding() -> ImRect;
 
-    static const ImRect kPadding;
-    static const ImColor kBackgroundColor;
-    static const ImColor kBorderColor;
-    static const ImColor kHeaderColor;
-    static const float kRounding;
-    static const float kHeaderPadding;
+    auto GetSize() const -> ImVec2;
+    auto GetInnerRect() const -> ImRect;
+    auto GetOuterRect() const -> ImRect;
 
     static int id_counter_;
 
+    ImVec2 offset_{};
     ImVec2 position_{};
     ImVec2 size_{};
+    std::string name_;
     int id_;
-
-
 };
 
 }  // namespace wave_generator::view::node

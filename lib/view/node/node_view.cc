@@ -2,33 +2,37 @@
 
 #include <imgui_internal.h>
 
+#include <utility>
+
 namespace wave_generator::view::node {
 
-const ImRect NodeView::kPadding = ImRect(10, 10, 10, 10);
-const ImColor NodeView::kBackgroundColor = ImColor(75, 75, 75);
-const ImColor NodeView::kBorderColor = ImColor(100, 100, 100);
-const ImColor NodeView::kHeaderColor = ImColor(200, 0, 0);
-const float NodeView::kHeaderPadding = 5.0f;
-const float NodeView::kRounding = 5.0f;
+static const ImRect kPadding = ImRect(10, 10, 10, 10);
+const ImColor kBackgroundColor = ImColor(75, 75, 75);
+const ImColor kBorderColor = ImColor(100, 100, 100);
+const ImColor kHeaderColor = ImColor(200, 0, 0);
+const float kHeaderPadding = 5.0f;
+const float kRounding = 5.0f;
 
 int NodeView::id_counter_ = 0;
 
-NodeView::NodeView(ImVec2 position)
-    : position_{position}, size_{}, id_{GenerateId()} {}
+NodeView::NodeView(std::string name, ImVec2 position)
+    : position_{position}, size_{}, id_{GenerateId()}, name_{std::move(name)} {}
 
 void NodeView::Render(ImDrawList *draw_list, ImVec2 offset) {
-    const auto start_position = offset + position_;
+    offset_ = offset;
+
+    const auto start_position = offset_ + position_;
     const auto internal_start_position = start_position + kPadding.GetTL();
 
     ImGui::PushID(id_);
 
-    ImGui::PushItemWidth(120);
+    ImGui::PushItemWidth(120.0F);
 
     draw_list->ChannelsSetCurrent(1);
     ImGui::SetCursorScreenPos(internal_start_position);
 
     ImGui::BeginGroup();
-    ImGui::Text("%s", GetName().c_str());
+    ImGui::Text("%s", name_.c_str());
     ImGui::Dummy(ImVec2(0.0F, kHeaderPadding));
     auto header_max_y = ImGui::GetItemRectMax().y;
 
@@ -37,6 +41,15 @@ void NodeView::Render(ImDrawList *draw_list, ImVec2 offset) {
         input->Render(draw_list);
     }
     ImGui::EndGroup();
+
+    ImGui::SameLine();
+
+    ImGui::BeginGroup();
+    for (const auto& output : GetOutputViews()) {
+        output->Render(draw_list);
+    }
+    ImGui::EndGroup();
+
     ImGui::EndGroup();
 
     size_ = ImGui::GetItemRectSize();
@@ -55,10 +68,29 @@ void NodeView::Render(ImDrawList *draw_list, ImVec2 offset) {
 
 auto NodeView::GetID() -> int { return id_; }
 
+auto NodeView::GetSize() const -> ImVec2 { return size_; }
+
+auto NodeView::GetPadding() -> ImRect { return kPadding; }
+
 auto NodeView::GenerateId() -> int { return id_counter_; }
 
-auto NodeView::GetInputViews() -> std::vector<const NodeInputView*> {
+auto NodeView::GetInputViews() -> std::vector<NodeInputView*> {
     return {};
+}
+
+auto NodeView::GetOutputViews() -> std::vector<NodeOutputView*> {
+    return {};
+}
+
+auto NodeView::GetInnerRect() const -> ImRect {
+    auto start_position = offset_ + position_ + kPadding.GetTL();
+    auto end_position = start_position + size_;
+    return {start_position, end_position};
+}
+
+auto NodeView::GetOuterRect() const -> ImRect {
+    auto inner_rect = GetInnerRect();
+    return {inner_rect.Min - kPadding.GetTL(), inner_rect.Max + kPadding.GetBR()};
 }
 
 }  // namespace wave_generator::view::node
