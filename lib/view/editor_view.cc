@@ -9,7 +9,7 @@ const std::string EditorView::kWindowName = "editor";
 
 EditorView::EditorView() {
     auto test_node =
-        std::make_shared<node::ConstantGeneratorNodeView>(ImVec2{0, 0});
+        std::make_shared<node::SineWaveGeneratorNodeView>(ImVec2{0, 0});
     auto test_node2 =
         std::make_shared<node::ConstantGeneratorNodeView>(ImVec2{100, 100});
     nodes_.push_back(test_node);

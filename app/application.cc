@@ -99,6 +99,7 @@ auto Application::InitImGui() -> ReturnCode {
 
     ImGui_ImplSDL2_InitForOpenGL(main_window_, gl_context_);
     ImGui_ImplOpenGL3_Init(config::kGlslVersion);
+    imgui_io_->Fonts->AddFontFromFileTTF(config::kFontPath.c_str(), 17.0F);
     return 0;
 }
 

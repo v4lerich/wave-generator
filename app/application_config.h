@@ -24,6 +24,8 @@ constexpr auto kImGuiTheme = ApplicationTheme::kClassic;
 
 constexpr auto kOpenGlVersion = OpenGlVersion { .major = 4, .minor = 2 };
 constexpr auto kGlslVersion = "#version 420";
+const std::string kResourcePath = "../res/";
+const std::string kFontPath = kResourcePath + "Rubik_font/Rubik-Medium.ttf";
 
 constexpr auto kLogLevel =
 #ifdef NDEBUG

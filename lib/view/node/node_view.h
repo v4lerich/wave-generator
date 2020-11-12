@@ -6,6 +6,9 @@
 #include <view.h>
 
 #include <string>
+#include <vector>
+
+#include "node_input_view.h"
 
 namespace wave_generator::view::node {
 
@@ -18,18 +21,25 @@ class NodeView {
 
   protected:
     virtual auto GetName() -> const std::string& = 0;
+    virtual auto GetInputViews() -> std::vector<const NodeInputView*>;
 
   private:
     static auto GenerateId() -> int;
 
     static const ImRect kPadding;
-    static int id_counter_;
     static const ImColor kBackgroundColor;
     static const ImColor kBorderColor;
+    static const ImColor kHeaderColor;
+    static const float kRounding;
+    static const float kHeaderPadding;
+
+    static int id_counter_;
 
     ImVec2 position_{};
     ImVec2 size_{};
     int id_;
+
+
 };
 
 }  // namespace wave_generator::view::node

@@ -6,7 +6,7 @@ add_library(${PROJECT_NAME}
     editor_view.cc editor_view.h
     node/node_view.cc node/node_view.h
     node/node_input_view.cc node/node_input_view.h
-    node/node_views.cc node/node_views.h)
+    node/node_views.cc node/node_views.h node/node_input_views.cc node/node_input_views.h)
 
 add_library(wave-generator::view
     ALIAS ${PROJECT_NAME})

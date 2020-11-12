@@ -3,12 +3,21 @@
 
 #include <imgui.h>
 #include <view.h>
+#include <string>
 
 namespace wave_generator::view::node {
 
-class NodeInputView : public View {
+class NodeInputView {
   public:
-    void Render() override;
+    explicit NodeInputView(std::string name);
+    void Render(ImDrawList *draw_list) const;
+
+  protected:
+    virtual void RenderItem(ImDrawList *draw_list) const = 0;
+    auto GetName() const -> const std::string&;
+
+  private:
+    std::string name_;
 };
 
 }  // namespace wave_generator::view::node
