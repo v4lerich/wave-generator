@@ -21,41 +21,20 @@ NodeView::NodeView(std::string name, ImVec2 position)
 void NodeView::Render(ImDrawList* draw_list, ImVec2 offset) {
     offset_ = offset;
 
-    const auto start_position = offset_ + position_;
-    const auto internal_start_position = start_position + kPadding.GetTL();
-
     ImGui::PushID(id_);
-
     ImGui::PushItemWidth(200.0F);
 
-    draw_list->ChannelsSetCurrent(1);
-    ImGui::SetCursorScreenPos(internal_start_position);
+    RenderNodeComponents(draw_list, GetInnerRect().Min);
 
-    ImGui::BeginGroup();
-    ImGui::Text("%s", name_.c_str());
-    ImGui::Dummy(ImVec2(0.0F, kHeaderPadding));
-    auto header_max_y = ImGui::GetItemRectMax().y;
+    RenderInteractNode(draw_list, GetOuterRect().Min);
 
-    for (const auto& input : GetInputViews()) {
-        input->Render(draw_list);
-    }
-    for (const auto& output : GetOutputViews()) {
-        output->Render(draw_list);
-    }
-
-    ImGui::EndGroup();
-
-    size_ = ImGui::GetItemRectSize();
-    const auto internal_end_position = internal_start_position + size_;
-    const auto end_position = internal_end_position + kPadding.GetBR();
-
+    const auto outer_rect = GetOuterRect();
     draw_list->ChannelsSetCurrent(0);
-    draw_list->AddRectFilled(start_position, end_position, kBackgroundColor,
+    draw_list->AddRectFilled(outer_rect.Min, outer_rect.Max, kBackgroundColor,
                              kRounding);
-    draw_list->AddRectFilled(start_position, {end_position.x, header_max_y},
+    draw_list->AddRectFilled(outer_rect.Min, {outer_rect.Max.x, header_rect_.Max.y},
                              kHeaderColor, kRounding);
-
-    draw_list->AddRect(start_position, end_position, kBorderColor, kRounding);
+    draw_list->AddRect(outer_rect.Min, outer_rect.Max, kBorderColor, kRounding);
 
     ImGui::PopItemWidth();
     ImGui::PopID();
@@ -63,11 +42,15 @@ void NodeView::Render(ImDrawList* draw_list, ImVec2 offset) {
 
 auto NodeView::GetID() -> int { return id_; }
 
-auto NodeView::GetSize() const -> ImVec2 { return size_; }
+auto NodeView::IsActive() -> bool { return is_active_; }
 
 auto NodeView::GetPadding() -> ImRect { return kPadding; }
 
-auto NodeView::GenerateId() -> int { return id_counter_; }
+auto NodeView::GetInnerSize() const -> ImVec2 { return size_; }
+
+auto NodeView::GetOuterSize() const -> ImVec2 { return size_ + kPadding.Min + kPadding.Max; }
+
+auto NodeView::GenerateId() -> int { return id_counter_++; }
 
 auto NodeView::GetInputViews() -> std::vector<NodeInputView*> { return {}; }
 
@@ -75,7 +58,7 @@ auto NodeView::GetOutputViews() -> std::vector<NodeOutputView*> { return {}; }
 
 auto NodeView::GetInnerRect() const -> ImRect {
     auto start_position = offset_ + position_ + kPadding.GetTL();
-    auto end_position = start_position + size_;
+    auto end_position = start_position + GetInnerSize();
     return {start_position, end_position};
 }
 
@@ -83,6 +66,41 @@ auto NodeView::GetOuterRect() const -> ImRect {
     auto inner_rect = GetInnerRect();
     return {inner_rect.Min - kPadding.GetTL(),
             inner_rect.Max + kPadding.GetBR()};
+}
+
+void NodeView::RenderNodeComponents(ImDrawList* draw_list, ImVec2 position) {
+    draw_list->ChannelsSetCurrent(1);
+    ImGui::SetCursorScreenPos(position);
+
+    ImGui::BeginGroup();
+    ImGui::Text("%s", name_.c_str());
+    header_rect_.Min = ImGui::GetItemRectMin();
+    ImGui::Dummy(ImVec2(0.0F, kHeaderPadding));
+    header_rect_.Max = ImGui::GetItemRectMax();
+
+    for (const auto& input : GetInputViews()) {
+        input->Render(draw_list);
+    }
+    for (const auto& output : GetOutputViews()) {
+        output->Render(draw_list);
+    }
+    ImGui::EndGroup();
+    size_ = ImGui::GetItemRectSize();
+}
+
+void NodeView::RenderInteractNode(ImDrawList* draw_list, ImVec2 position) {
+    draw_list->ChannelsSetCurrent(0);
+    ImGui::SetCursorScreenPos(position);
+
+    ImGui::InvisibleButton("interact_node", GetOuterSize());
+    is_active_ = ImGui::IsItemActive();
+}
+
+void NodeView::Move(ImVec2 delta) {
+    position_ += delta;
+    position_.x = std::max(position_.x, 0.0F);
+    position_.y = std::max(position_.y, 0.0F);
+
 }
 
 }  // namespace wave_generator::view::node

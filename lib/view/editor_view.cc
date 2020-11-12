@@ -1,5 +1,6 @@
 #include "editor_view.h"
 
+#include <algorithm>
 #include <imgui.h>
 #include <node/node_views.h>
 
@@ -25,7 +26,7 @@ const std::string& EditorView::WindowName() { return kWindowName; }
 
 void EditorView::RenderWindow() {
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse |
-                                    ImGuiWindowFlags_NoScrollbar |
+                                    ImGuiWindowFlags_HorizontalScrollbar |
                                     ImGuiWindowFlags_NoMove;
 
     if (!ImGui::Begin(EditorView::WindowName().c_str(), nullptr,
@@ -33,17 +34,34 @@ void EditorView::RenderWindow() {
         return;
     }
 
-    auto offset = ImGui::GetCursorScreenPos();
+    auto offset = ImGui::GetCursorScreenPos() + scrolling_offset_;
     auto draw_list = ImGui::GetWindowDrawList();
 
     draw_list->ChannelsSplit(2);
-
     for (auto& node : nodes_) {
         node->Render(draw_list, offset);
-    }
 
+        if (node->IsActive()) {
+            auto move_delta = ImGui::GetIO().MouseDelta;
+            auto moved_rect = node->GetOuterRect();
+            moved_rect.Translate(move_delta);
+
+            bool is_overlap = std::any_of(std::begin(nodes_), std::end(nodes_),
+                [&](const auto& other_node) { return other_node->GetID() != node->GetID() && moved_rect.Overlaps(other_node->GetOuterRect()); }
+            );
+
+            if (!is_overlap) {
+                node->Move(move_delta);
+            }
+        }
+    }
     draw_list->ChannelsMerge();
 
+    if (ImGui::IsWindowHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+        scrolling_offset_ += ImGui::GetIO().MouseDelta;
+        scrolling_offset_.x = std::max(scrolling_offset_.x, 0.0F);
+        scrolling_offset_.y = std::max(scrolling_offset_.y, 0.0F);
+    }
     ImGui::End();
 }
 

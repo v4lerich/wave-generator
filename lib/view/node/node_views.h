@@ -23,11 +23,12 @@ class ConstantGeneratorNodeView final : public SignalGeneratorNodeView {
 
   protected:
     auto GetOutputViews() -> std::vector<NodeOutputView *> override;
+    auto GetInputViews() -> std::vector<NodeInputView *> override;
     auto CreateGenerator()
         -> std::unique_ptr<synthesizer::SignalGenerator> override;
 
   private:
-    float value_;
+    node::FloatInputView constant_input_;
     node::SignalPortOutputView output_node_;
 };
 

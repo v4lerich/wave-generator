@@ -10,7 +10,7 @@ SignalGeneratorNodeView::SignalGeneratorNodeView(std::string name,
 
 ConstantGeneratorNodeView::ConstantGeneratorNodeView(ImVec2 position)
     : SignalGeneratorNodeView{"Constant", position},
-      value_{1.0F},
+      constant_input_{*this, "Value"},
       output_node_{*this} {}
 
 auto ConstantGeneratorNodeView::GetOutputViews()
@@ -18,9 +18,14 @@ auto ConstantGeneratorNodeView::GetOutputViews()
     return {&output_node_};
 }
 
+auto ConstantGeneratorNodeView::GetInputViews()
+    -> std::vector<NodeInputView *> {
+    return {&constant_input_};
+}
+
 auto ConstantGeneratorNodeView::CreateGenerator()
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    return std::make_unique<synthesizer::ConstantGenerator>(value_);
+    return std::make_unique<synthesizer::ConstantGenerator>(constant_input_.GetValue());
 }
 
 SineWaveGeneratorNodeView::SineWaveGeneratorNodeView(ImVec2 position)

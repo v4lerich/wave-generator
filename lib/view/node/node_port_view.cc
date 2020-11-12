@@ -60,7 +60,7 @@ void NodeOutputView::Render(ImDrawList *draw_list) {
     ImGui::Text("%s", name_.c_str());
     ImGui::EndGroup();
 
-    auto item_rect =ImRect{ImGui::GetItemRectMin(), ImGui::GetItemRectMax()};
+    auto item_rect = ImRect{ImGui::GetItemRectMin(), ImGui::GetItemRectMax()};
     auto port_position =
         ImVec2{parent_.GetOuterRect().Max.x, item_rect.GetCenter().y};
     DrawPort(draw_list, port_position);

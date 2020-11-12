@@ -21,6 +21,12 @@ class NodeView {
     void Render(ImDrawList *draw_list, ImVec2 offset = {});
 
     auto GetID() -> int;
+    auto IsActive() -> bool;
+
+    void Move(ImVec2 delta);
+
+    auto GetInnerRect() const -> ImRect;
+    auto GetOuterRect() const -> ImRect;
 
   protected:
     virtual auto GetInputViews() -> std::vector<NodeInputView *>;
@@ -30,15 +36,19 @@ class NodeView {
     static auto GenerateId() -> int;
     static auto GetPadding() -> ImRect;
 
-    auto GetSize() const -> ImVec2;
-    auto GetInnerRect() const -> ImRect;
-    auto GetOuterRect() const -> ImRect;
+    auto GetInnerSize() const -> ImVec2;
+    auto GetOuterSize() const -> ImVec2;
+
+    void RenderNodeComponents(ImDrawList *draw_list, ImVec2 position);
+    void RenderInteractNode(ImDrawList *draw_list, ImVec2 position);
 
     static int id_counter_;
 
     ImVec2 offset_{};
     ImVec2 position_{};
     ImVec2 size_{};
+    ImRect header_rect_{};
+    bool is_active_{};
     std::string name_;
     int id_;
 };

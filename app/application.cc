@@ -88,6 +88,7 @@ auto Application::InitImGui() -> ReturnCode {
     imgui_io_->IniFilename = nullptr;
     imgui_io_->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     imgui_io_->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    imgui_io_->ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
 
     if (config::kImGuiTheme == config::ApplicationTheme::kDark) {
         ImGui::StyleColorsDark();

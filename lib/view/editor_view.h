@@ -23,6 +23,7 @@ class EditorView : public View {
     static const std::string kWindowName;
 
     std::vector<std::shared_ptr<node::NodeView>> nodes_{};
+    ImVec2 scrolling_offset_{};
     bool is_open_{true};
 };
 
