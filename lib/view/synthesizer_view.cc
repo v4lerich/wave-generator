@@ -47,7 +47,8 @@ void SynthesizerView::BeginDockingWindow() {
 }
 
 void SynthesizerView::InitDockingLayout() {
-    if (ImGui::DockBuilderGetNode(ImGui::GetID(kDockspaceName.c_str())) == nullptr) {
+    if (ImGui::DockBuilderGetNode(ImGui::GetID(kDockspaceName.c_str())) ==
+        nullptr) {
         ImGuiID dockspace_id = ImGui::GetID(kDockspaceName.c_str());
         ImGui::DockBuilderRemoveNode(dockspace_id);
         ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);

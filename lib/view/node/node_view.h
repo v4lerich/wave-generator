@@ -23,8 +23,8 @@ class NodeView {
     auto GetID() -> int;
 
   protected:
-    virtual auto GetInputViews() -> std::vector<NodeInputView*>;
-    virtual auto GetOutputViews() -> std::vector<NodeOutputView*>;
+    virtual auto GetInputViews() -> std::vector<NodeInputView *>;
+    virtual auto GetOutputViews() -> std::vector<NodeOutputView *>;
 
   private:
     static auto GenerateId() -> int;

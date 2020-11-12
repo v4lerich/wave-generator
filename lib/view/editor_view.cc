@@ -11,9 +11,12 @@ EditorView::EditorView() {
     auto test_node =
         std::make_shared<node::SineWaveGeneratorNodeView>(ImVec2{0, 0});
     auto test_node2 =
-        std::make_shared<node::ConstantGeneratorNodeView>(ImVec2{100, 100});
+        std::make_shared<node::SineWaveGeneratorNodeView>(ImVec2{300, 0});
+    auto test_node3 =
+        std::make_shared<node::ConstantGeneratorNodeView>(ImVec2{200, 200});
     nodes_.push_back(test_node);
     nodes_.push_back(test_node2);
+    nodes_.push_back(test_node3);
 }
 
 void EditorView::Render() { RenderWindow(); }

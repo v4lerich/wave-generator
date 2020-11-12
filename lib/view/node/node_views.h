@@ -13,7 +13,8 @@ namespace wave_generator::view::node {
 class SignalGeneratorNodeView : public NodeView {
   public:
     explicit SignalGeneratorNodeView(std::string name, ImVec2 position = {});
-    virtual auto CreateGenerator() -> std::unique_ptr<synthesizer::SignalGenerator> = 0;
+    virtual auto CreateGenerator()
+        -> std::unique_ptr<synthesizer::SignalGenerator> = 0;
 };
 
 class ConstantGeneratorNodeView final : public SignalGeneratorNodeView {
@@ -22,23 +23,30 @@ class ConstantGeneratorNodeView final : public SignalGeneratorNodeView {
 
   protected:
     auto GetOutputViews() -> std::vector<NodeOutputView *> override;
-    auto CreateGenerator() -> std::unique_ptr<synthesizer::SignalGenerator> override;
+    auto CreateGenerator()
+        -> std::unique_ptr<synthesizer::SignalGenerator> override;
 
   private:
     float value_;
-    node::NodeOutputView output_node_;
+    node::SignalPortOutputView output_node_;
 };
 
 class SineWaveGeneratorNodeView final : public SignalGeneratorNodeView {
   public:
     explicit SineWaveGeneratorNodeView(ImVec2 position = {});
-    auto CreateGenerator() -> std::unique_ptr<synthesizer::SignalGenerator> override;
+    auto CreateGenerator()
+        -> std::unique_ptr<synthesizer::SignalGenerator> override;
 
   protected:
-    auto GetInputViews() -> std::vector<NodeInputView*> override;
+    auto GetInputViews() -> std::vector<NodeInputView *> override;
+    auto GetOutputViews() -> std::vector<NodeOutputView *> override;
 
   private:
-    node::SignalNodeInputView amplitude_input_node_;
+    node::SignalPortInputView frequency_input_port_;
+    node::SignalPortInputView amplitude_input_port_;
+    node::FloatInputView base_frequency_input_;
+    node::FloatInputView base_amplitude_input_;
+    node::SignalPortOutputView output_node_;
 };
 
 }  // namespace wave_generator::view::node
