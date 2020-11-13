@@ -21,6 +21,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(OpenGL REQUIRED)
 
+set(RESOURCE_PATH "${CMAKE_BINARY_DIR}/res")
+
 add_subdirectory(3rd_party/)
 add_subdirectory(lib/)
 add_subdirectory(app/)

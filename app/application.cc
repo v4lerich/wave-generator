@@ -11,6 +11,8 @@
 
 namespace wave_generator {
 
+static const ImWchar kForkAwesomeIconsRanges[] = { ICON_MIN_FK, ICON_MAX_FK, 0 };
+
 Application::Application(int /*argc*/, char** /*argv*/) {}
 
 auto Application::Init() -> ReturnCode {
@@ -100,7 +102,12 @@ auto Application::InitImGui() -> ReturnCode {
 
     ImGui_ImplSDL2_InitForOpenGL(main_window_, gl_context_);
     ImGui_ImplOpenGL3_Init(config::kGlslVersion);
-    imgui_io_->Fonts->AddFontFromFileTTF(config::kFontPath.c_str(), 17.0F);
+    imgui_io_->Fonts->AddFontFromFileTTF(config::kRubikFontPath.c_str(), 17.0F);
+
+    ImFontConfig icons_config;
+    icons_config.MergeMode = true;
+    icons_config.PixelSnapH = true;
+    imgui_io_->Fonts->AddFontFromFileTTF(config::kForkAwesomeFontPath.c_str(), 17.0F, &icons_config, kForkAwesomeIconsRanges);
     return 0;
 }
 

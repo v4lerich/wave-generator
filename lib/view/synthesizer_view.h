@@ -6,13 +6,13 @@
 #include <memory>
 
 #include "editor_view.h"
+#include "player_view.h"
 #include "view.h"
 
 namespace wave_generator::view {
 
 class SynthesizerView : public View {
   public:
-    SynthesizerView();
     void Render() override;
 
   private:
@@ -22,7 +22,8 @@ class SynthesizerView : public View {
 
     void RenderMenuBar();
 
-    std::unique_ptr<EditorView> editor_view_;
+    PlayerView player_view_;
+    EditorView editor_view_;
 };
 
 }  // namespace wave_generator::view

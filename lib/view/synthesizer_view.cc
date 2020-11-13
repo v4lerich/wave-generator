@@ -4,15 +4,20 @@
 
 namespace wave_generator::view {
 
-const std::string kDockspaceName = "main_dockspace";
-
-SynthesizerView::SynthesizerView() : editor_view_{new EditorView{}} {}
+static const std::string kDockspaceName = "main_dockspace";
 
 void SynthesizerView::Render() {
     BeginDockingWindow();
     RenderMenuBar();
 
-    editor_view_->Render();
+    ImGuiWindowClass window_class;
+    window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+
+    ImGui::SetNextWindowClass(&window_class);
+    editor_view_.Render();
+
+    ImGui::SetNextWindowClass(&window_class);
+    player_view_.Render();
 
     EndDockingWindow();
 }
@@ -31,7 +36,8 @@ void SynthesizerView::BeginDockingWindow() {
     bool show_dock_window = true;
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0F);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{});
-    ImGui::Begin("DockSpace Demo", &show_dock_window, window_flags);
+
+    ImGui::Begin("DockSpace Demo", nullptr, window_flags);
     ImGui::PopStyleVar();
 
     const ImGuiDockNodeFlags docking_flags = ImGuiDockNodeFlags_PassthruCentralNode;
@@ -47,7 +53,10 @@ void SynthesizerView::InitDockingLayout() {
         ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetWindowViewport()->Size);
 
         ImGuiID dock_main_id = dockspace_id;
-        ImGui::DockBuilderDockWindow(editor_view_->WindowName().c_str(), dock_main_id);
+        ImGuiID dock_up_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Up, 0, nullptr, &dock_main_id);
+
+        ImGui::DockBuilderDockWindow(player_view_.WindowName().c_str(), dock_up_id);
+        ImGui::DockBuilderDockWindow(editor_view_.WindowName().c_str(), dock_main_id);
         ImGui::DockBuilderFinish(dockspace_id);
     }
 }

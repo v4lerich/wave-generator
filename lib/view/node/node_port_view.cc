@@ -136,6 +136,7 @@ auto NodeOutputView::GetPortRect() const -> ImRect {
     rect.Expand(GetPortSize() / 2);
     return rect;
 }
+
 auto NodeOutputView::GetPortSize() const -> ImVec2 { return {2 * kPortRadius, 2 * kPortRadius}; }
 
 void NodeOutputView::Connect(NodeInputView* input) {

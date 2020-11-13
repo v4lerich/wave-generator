@@ -2,6 +2,7 @@
 #define WAVEGENERATOR_APPLICATION_CONFIG_H
 
 #include <SDL_log.h>
+#include <IconsForkAwesome.h>
 
 namespace wave_generator::config {
 
@@ -25,7 +26,8 @@ constexpr auto kImGuiTheme = ApplicationTheme::kClassic;
 constexpr auto kOpenGlVersion = OpenGlVersion { .major = 4, .minor = 2 };
 constexpr auto kGlslVersion = "#version 420";
 const std::string kResourcePath = "../res/";
-const std::string kFontPath = kResourcePath + "Rubik_font/Rubik-Medium.ttf";
+const std::string kRubikFontPath = kResourcePath + "RubikFont/Rubik-Medium.ttf";
+const std::string kForkAwesomeFontPath = kResourcePath + "ForkAwesomeFont/" + FONT_ICON_FILE_NAME_FK;
 
 constexpr auto kLogLevel =
 #ifdef NDEBUG
