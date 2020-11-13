@@ -4,8 +4,7 @@
 
 namespace wave_generator::view {
 
-const std::string SynthesizerView::kNodesWindowName = "nodes";
-const std::string SynthesizerView::kDockspaceName = "main_dockspace";
+const std::string kDockspaceName = "main_dockspace";
 
 SynthesizerView::SynthesizerView() : editor_view_{new EditorView{}} {}
 
@@ -14,10 +13,6 @@ void SynthesizerView::Render() {
     RenderMenuBar();
 
     editor_view_->Render();
-
-    auto window_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse;
-    ImGui::Begin(kNodesWindowName.c_str(), nullptr, window_flags);
-    ImGui::End();
 
     EndDockingWindow();
 }
@@ -56,12 +51,8 @@ void SynthesizerView::InitDockingLayout() {
                                       ImGui::GetWindowViewport()->Size);
 
         ImGuiID dock_main_id = dockspace_id;
-        ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(
-            dock_main_id, ImGuiDir_Left, 0.20F, nullptr, &dock_main_id);
-
         ImGui::DockBuilderDockWindow(editor_view_->WindowName().c_str(),
                                      dock_main_id);
-        ImGui::DockBuilderDockWindow(kNodesWindowName.c_str(), dock_left_id);
         ImGui::DockBuilderFinish(dockspace_id);
     }
 }

@@ -110,6 +110,7 @@ void NodeView::RenderInteractNode(ImDrawList* draw_list, ImVec2 position) {
 
     ImGui::InvisibleButton("interact_node", GetOuterSize());
     is_active_ = ImGui::IsItemActive();
+    is_context_open_ = ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right);
 }
 
 void NodeView::Move(ImVec2 delta) {
@@ -127,5 +128,19 @@ auto NodeView::GetInput(ImVec2 position) -> NodeInputView* {
     });
     return found_input == std::end(inputs) ? nullptr : *found_input;
 }
+
+void NodeView::Disconnect() {
+    auto inputs = GetInputViews();
+    for (auto& input : inputs) {
+        input->Disconnect();
+    }
+
+    auto outputs = GetOutputViews();
+    for (auto& output : outputs) {
+        output->DisconnectAll();
+    }
+}
+
+auto NodeView::IsContextOpen() const -> bool { return is_context_open_; }
 
 }  // namespace wave_generator::view::node

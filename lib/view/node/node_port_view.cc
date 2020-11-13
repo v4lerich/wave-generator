@@ -71,6 +71,7 @@ void NodeInputView::Render(ImDrawList* draw_list) {
 void NodeInputView::Connect(NodeOutputView* output) {
     if (connected_output_ == nullptr) {
         connected_output_ = output;
+        output->Connect(this);
     }
 }
 
@@ -80,7 +81,12 @@ auto NodeInputView::GetID() -> int { return counter_id_++; }
 
 auto NodeInputView::GetPortPosition() const -> ImVec2 { return port_position_; }
 
-void NodeInputView::Disconnect() { connected_output_ = nullptr; }
+void NodeInputView::Disconnect() {
+    if (connected_output_ != nullptr) {
+        connected_output_->Disconnect(this);
+        connected_output_ = nullptr;
+    }
+}
 
 auto NodeInputView::GetPortSize() const -> ImVec2 { return {2 * kPortRadius, 2 * kPortRadius}; }
 
@@ -127,11 +133,22 @@ auto NodeOutputView::GetPortRect() const -> ImRect {
 auto NodeOutputView::GetPortSize() const -> ImVec2 { return {2 * kPortRadius, 2 * kPortRadius}; }
 
 void NodeOutputView::Connect(NodeInputView* input) {
-    connected_inputs_.insert(input);
+    if (connected_inputs_.find(input) == std::end(connected_inputs_)) {
+        connected_inputs_.insert(input);
+        input->Connect(this);
+    }
 }
 
 void NodeOutputView::Disconnect(NodeInputView* input) {
-    connected_inputs_.erase(input);
+    if (connected_inputs_.erase(input) != 0) {
+        input->Disconnect();
+    }
+}
+
+void NodeOutputView::DisconnectAll() {
+    while (!connected_inputs_.empty()) {
+        Disconnect(*std::begin(connected_inputs_));
+    }
 }
 
 }  // namespace wave_generator::view::node

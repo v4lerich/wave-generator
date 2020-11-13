@@ -18,11 +18,15 @@ class NodeView {
 
   public:
     explicit NodeView(std::string name, ImVec2 position = {});
+
     void Render(ImDrawList *draw_list, ImVec2 offset = {});
 
     auto GetID() const -> int;
     auto IsActive() const -> bool;
+    auto IsContextOpen() const -> bool;
+
     auto IsConnecting() -> bool;
+    void Disconnect();
     auto GetConnectingOutput() -> NodeOutputView *;
     auto GetInput(ImVec2 position) -> NodeInputView *;
 
@@ -53,11 +57,14 @@ class NodeView {
     ImRect header_rect_{};
     bool is_active_{};
     bool is_initialized_{};
+    bool is_context_open_{};
     NodeOutputView* connecting_output_{};
 
     std::string name_;
     int id_;
 };
+
+
 
 }  // namespace wave_generator::view::node
 

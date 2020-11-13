@@ -1,5 +1,7 @@
 #include "node_views.h"
 
+#include <constant_generator.h>
+
 #include <utility>
 
 namespace wave_generator::view::node {
@@ -53,6 +55,28 @@ auto SineWaveGeneratorNodeView::CreateGenerator()
 auto SineWaveGeneratorNodeView::GetOutputViews()
     -> std::vector<NodeOutputView *> {
     return {&output_node_};
+}
+
+NodeViewFactoryStorage::NodeViewFactoryEntry::NodeViewFactoryEntry(
+    std::string name,
+    Constructor constructor)
+    : name_{std::move(name)}, constructor_{std::move(constructor)} {}
+
+const std::string &NodeViewFactoryStorage::NodeViewFactoryEntry::GetName() const {
+    return name_;
+}
+
+auto NodeViewFactoryStorage::NodeViewFactoryEntry::Construct(ImVec2 position) const -> NodeView * {
+    return constructor_(position);
+}
+
+auto NodeViewFactoryStorage::GetFactories() -> const std::vector<NodeViewFactoryEntry> & {
+    return factories_;
+}
+
+void NodeViewFactoryStorage::RegisterFactory(
+    const std::string& name, const NodeViewFactoryStorage::Constructor& constructor) {
+    factories_.emplace_back(name, constructor);
 }
 
 }  // namespace wave_generator::view::node

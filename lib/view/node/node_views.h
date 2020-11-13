@@ -1,14 +1,37 @@
 #ifndef WAVEGENERATOR_NODE_VIEWS_H
 #define WAVEGENERATOR_NODE_VIEWS_H
 
-#include <constant_generator.h>
+#include <signal_generator.h>
 
+#include <functional>
 #include <memory>
 
 #include "node_port_views.h"
 #include "node_view.h"
 
 namespace wave_generator::view::node {
+
+class NodeViewFactoryStorage {
+  public:
+    using Constructor = std::function<NodeView *(ImVec2)>;
+
+    class NodeViewFactoryEntry {
+      public:
+        NodeViewFactoryEntry(std::string name, Constructor constructor);
+        auto GetName() const -> const std::string&;
+        auto Construct(ImVec2 position) const -> NodeView *;
+
+      private:
+        std::string name_;
+        Constructor constructor_;
+    };
+
+    void RegisterFactory(const std::string& name, const Constructor& constructor);
+    auto GetFactories() -> const std::vector<NodeViewFactoryEntry>&;
+
+  private:
+    std::vector<NodeViewFactoryEntry> factories_;
+};
 
 class SignalGeneratorNodeView : public NodeView {
   public:

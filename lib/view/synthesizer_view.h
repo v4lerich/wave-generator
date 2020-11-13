@@ -22,9 +22,6 @@ class SynthesizerView : public View {
 
     void RenderMenuBar();
 
-    static const std::string kNodesWindowName;
-    static const std::string kDockspaceName;
-
     std::unique_ptr<EditorView> editor_view_;
 };
 

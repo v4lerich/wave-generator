@@ -59,10 +59,11 @@ class NodeOutputView {
 
     void Connect(NodeInputView* input);
     void Disconnect(NodeInputView* input);
+    void DisconnectAll();
     auto IsConnecting() const -> bool;
 
   private:
-    std::unordered_set<const NodeInputView *> connected_inputs_{};
+    std::unordered_set<NodeInputView *> connected_inputs_{};
     const NodeView& parent_;
     std::string name_;
     ImVec2 position_{};
