@@ -3,6 +3,7 @@
 #include <imgui_internal.h>
 
 #include <utility>
+#include <algorithm>
 
 namespace wave_generator::view::node {
 
@@ -38,11 +39,17 @@ void NodeView::Render(ImDrawList* draw_list, ImVec2 offset) {
 
     ImGui::PopItemWidth();
     ImGui::PopID();
+
+    is_initialized_ = true;
 }
 
-auto NodeView::GetID() -> int { return id_; }
+auto NodeView::GetID() const -> int { return id_; }
 
-auto NodeView::IsActive() -> bool { return is_active_; }
+auto NodeView::IsActive() const -> bool { return is_active_; }
+
+auto NodeView::IsConnecting() -> bool {
+    return connecting_output_ != nullptr;
+}
 
 auto NodeView::GetPadding() -> ImRect { return kPadding; }
 
@@ -81,11 +88,20 @@ void NodeView::RenderNodeComponents(ImDrawList* draw_list, ImVec2 position) {
     for (const auto& input : GetInputViews()) {
         input->Render(draw_list);
     }
+
+    connecting_output_ = nullptr;
     for (const auto& output : GetOutputViews()) {
         output->Render(draw_list);
+
+        if (output->IsConnecting()) {
+            connecting_output_ = output;
+        }
     }
     ImGui::EndGroup();
-    size_ = ImGui::GetItemRectSize();
+
+    if (!is_initialized_) {
+        size_ = ImGui::GetItemRectSize();
+    }
 }
 
 void NodeView::RenderInteractNode(ImDrawList* draw_list, ImVec2 position) {
@@ -100,7 +116,16 @@ void NodeView::Move(ImVec2 delta) {
     position_ += delta;
     position_.x = std::max(position_.x, 0.0F);
     position_.y = std::max(position_.y, 0.0F);
+}
 
+auto NodeView::GetConnectingOutput() -> NodeOutputView* { return connecting_output_; }
+
+auto NodeView::GetInput(ImVec2 position) -> NodeInputView* {
+    auto inputs = GetInputViews();
+    auto found_input = std::find_if(std::begin(inputs), std::end(inputs), [&] (const auto& input) {
+        return input->HasPort() && input->GetPortRect().Contains(position);
+    });
+    return found_input == std::end(inputs) ? nullptr : *found_input;
 }
 
 }  // namespace wave_generator::view::node

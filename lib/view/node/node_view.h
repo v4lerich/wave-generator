@@ -20,8 +20,11 @@ class NodeView {
     explicit NodeView(std::string name, ImVec2 position = {});
     void Render(ImDrawList *draw_list, ImVec2 offset = {});
 
-    auto GetID() -> int;
-    auto IsActive() -> bool;
+    auto GetID() const -> int;
+    auto IsActive() const -> bool;
+    auto IsConnecting() -> bool;
+    auto GetConnectingOutput() -> NodeOutputView *;
+    auto GetInput(ImVec2 position) -> NodeInputView *;
 
     void Move(ImVec2 delta);
 
@@ -49,6 +52,9 @@ class NodeView {
     ImVec2 size_{};
     ImRect header_rect_{};
     bool is_active_{};
+    bool is_initialized_{};
+    NodeOutputView* connecting_output_{};
+
     std::string name_;
     int id_;
 };

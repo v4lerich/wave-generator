@@ -54,6 +54,20 @@ void EditorView::RenderWindow() {
                 node->Move(move_delta);
             }
         }
+
+        if (node->IsConnecting()) {
+            auto mouse_position = ImGui::GetIO().MousePos;
+            auto output = node->GetConnectingOutput();
+            auto found_node = std::find_if(std::begin(nodes_), std::end(nodes_),
+                [&](const auto& other_node) { return other_node->GetInput(mouse_position); });
+
+            if (found_node != std::end(nodes_)) {
+                auto found_input = (*found_node)->GetInput(mouse_position);
+                if (found_input->CanConnect(output)) {
+                    found_input->Connect(output);
+                }
+            }
+        }
     }
     draw_list->ChannelsMerge();
 
