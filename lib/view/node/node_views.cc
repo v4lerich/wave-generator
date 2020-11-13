@@ -14,12 +14,9 @@ SignalGeneratorNodeView::SignalGeneratorNodeView(std::string name, ImVec2 positi
     : NodeView{std::move(name), position} {}
 
 SignalSinkNodeView::SignalSinkNodeView(ImVec2 position)
-    : SignalGeneratorNodeView{"Sink", position},
-      input_node_{this, "Input"} {}
+    : SignalGeneratorNodeView{"Sink", position}, input_node_{this, "Input"} {}
 
-std::list<NodeInputView *> SignalSinkNodeView::GetInputViews() {
-    return {&input_node_};
-}
+std::list<NodeInputView *> SignalSinkNodeView::GetInputViews() { return {&input_node_}; }
 
 auto SignalSinkNodeView::CreateGenerator() const -> std::unique_ptr<synthesizer::SignalGenerator> {
     auto connected_node = input_node_.GetConnectedSignalNode();

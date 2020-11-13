@@ -8,7 +8,8 @@ NodeViewFactoryStorage::NodeViewFactoryEntry::NodeViewFactoryEntry(std::string n
 
 const std::string& NodeViewFactoryStorage::NodeViewFactoryEntry::GetName() const { return name_; }
 
-auto NodeViewFactoryStorage::NodeViewFactoryEntry::Construct(ImVec2 position) const -> std::shared_ptr<NodeView> {
+auto NodeViewFactoryStorage::NodeViewFactoryEntry::Construct(ImVec2 position) const
+    -> std::shared_ptr<NodeView> {
     return std::shared_ptr<NodeView>{constructor_(position)};
 }
 

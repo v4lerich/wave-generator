@@ -20,6 +20,8 @@ class NodeInputView {
     explicit NodeInputView(const NodeView* parent, std::string name = "Input",
                            bool has_port = false);
     virtual ~NodeInputView() = default;
+
+    void SetChannels(int foreground_channel, int background_channel);
     void Render(ImDrawList* draw_list);
 
     void Connect(NodeOutputView* output);
@@ -48,12 +50,17 @@ class NodeInputView {
     bool has_port_;
     std::string name_;
     ImVec2 port_position_{};
+
+    int foreground_channel_{};
+    int background_channel_{};
 };
 
 class NodeOutputView {
   public:
     explicit NodeOutputView(const NodeView* parent, std::string name = "Output");
     virtual ~NodeOutputView() = default;
+
+    void SetChannels(int foreground_channel, int background_channel);
     void Render(ImDrawList* draw_list);
 
     auto GetNode() const -> const NodeView*;
@@ -71,6 +78,9 @@ class NodeOutputView {
     const NodeView* parent_;
     std::string name_;
     ImVec2 position_{};
+
+    int foreground_channel_{};
+    int background_channel_{};
 
     bool is_connecting_{};
 };

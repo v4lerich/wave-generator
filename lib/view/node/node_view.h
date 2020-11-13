@@ -5,8 +5,8 @@
 #include <imgui_internal.h>
 #include <view.h>
 
-#include <string>
 #include <list>
+#include <string>
 
 #include "node_port_view.h"
 
@@ -17,6 +17,7 @@ class NodeView {
     explicit NodeView(std::string name, ImVec2 position = {});
     virtual ~NodeView() = default;
 
+    void SetChannels(int foreground_channel, int background_channel);
     void Render(ImDrawList *draw_list, ImVec2 offset = {});
 
     auto GetID() const -> int;
@@ -58,6 +59,9 @@ class NodeView {
     bool is_initialized_{};
     bool is_context_open_{};
     NodeOutputView *connecting_output_{};
+
+    int foreground_channel_{};
+    int background_channel_{};
 
     std::string name_;
     int id_;

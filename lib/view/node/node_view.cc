@@ -27,14 +27,14 @@ void NodeView::Render(ImDrawList* draw_list, ImVec2 offset) {
 
     RenderNodeComponents(draw_list, GetInnerRect().Min);
 
-    RenderInteractNode(draw_list, GetOuterRect().Min);
-
     const auto outer_rect = GetOuterRect();
-    draw_list->ChannelsSetCurrent(0);
+    draw_list->ChannelsSetCurrent(background_channel_);
     draw_list->AddRectFilled(outer_rect.Min, outer_rect.Max, kBackgroundColor, kRounding);
     draw_list->AddRectFilled(outer_rect.Min, {outer_rect.Max.x, header_rect_.Max.y}, kHeaderColor,
                              kRounding);
     draw_list->AddRect(outer_rect.Min, outer_rect.Max, kBorderColor, kRounding);
+
+    RenderInteractNode(draw_list, GetOuterRect().Min);
 
     ImGui::PopItemWidth();
     ImGui::PopID();
@@ -72,7 +72,7 @@ auto NodeView::GetOuterRect() const -> ImRect {
 }
 
 void NodeView::RenderNodeComponents(ImDrawList* draw_list, ImVec2 position) {
-    draw_list->ChannelsSetCurrent(1);
+    draw_list->ChannelsSetCurrent(foreground_channel_);
     ImGui::SetCursorScreenPos(position);
 
     ImGui::BeginGroup();
@@ -82,11 +82,13 @@ void NodeView::RenderNodeComponents(ImDrawList* draw_list, ImVec2 position) {
     header_rect_.Max = ImGui::GetItemRectMax();
 
     for (const auto& input : GetInputViews()) {
+        input->SetChannels(foreground_channel_, background_channel_);
         input->Render(draw_list);
     }
 
     connecting_output_ = nullptr;
     for (const auto& output : GetOutputViews()) {
+        output->SetChannels(foreground_channel_, background_channel_);
         output->Render(draw_list);
 
         if (output->IsConnecting()) {
@@ -140,5 +142,10 @@ void NodeView::Disconnect() {
 auto NodeView::IsContextOpen() const -> bool { return is_context_open_; }
 
 auto NodeView::IsDeletable() const -> bool { return true; }
+
+void NodeView::SetChannels(int foreground_channel, int background_channel) {
+    foreground_channel_ = foreground_channel;
+    background_channel_ = background_channel;
+}
 
 }  // namespace wave_generator::view::node
