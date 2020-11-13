@@ -4,8 +4,6 @@ if (TARGET ${PROJECT_NAME})
     return()
 endif()
 
-add_subdirectory(external/sdl2)
-
 add_subdirectory(glad/cmake)
 glad_add_library(glad_gl_core_42
     REPRODUCIBLE STATIC ALIAS

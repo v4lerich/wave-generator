@@ -6,6 +6,6 @@
 	path = 3rd_party/glad2_loader/glad
     url = https://github.com/Dav1dde/glad
     branch = glad2
-[submodule "3rd_party/spdlog_logger/spdlog"]
-	path = 3rd_party/spdlog_logger/spdlog
-	url = https://github.com/gabime/spdlog
+[submodule "3rd_party/sdl2/SDL"]
+	path = 3rd_party/sdl2/SDL
+	url = https://github.com/SDL-mirror/SDL

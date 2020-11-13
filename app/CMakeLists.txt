@@ -10,8 +10,6 @@ target_link_libraries(${PROJECT_NAME}
     imgui
     sdl2
     glad2_loader
-    spdlog_logger
-
     wave-generator::view
 )
 

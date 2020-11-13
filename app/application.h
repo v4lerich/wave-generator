@@ -19,7 +19,7 @@ class Application {
     Application(int argc, char **argv);
     void AddView(std::unique_ptr<View> view);
     auto Init() -> ReturnCode;
-    auto Run() -> ReturnCode;
+    auto Run()  -> ReturnCode;
 
   private:
     static auto InitSdl() -> ReturnCode;

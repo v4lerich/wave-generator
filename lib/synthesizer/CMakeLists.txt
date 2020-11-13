@@ -9,8 +9,7 @@ add_library(${PROJECT_NAME}
     white_noise_generator.h white_noise_generator.cc
     pulse_generator.h pulse_generator.cc
     constant_generator.h constant_generator.cc
-    integrator.h integrator.cc
-    )
+    integrator.h integrator.cc)
 
 add_library(wave-generator::synthesizer
     ALIAS ${PROJECT_NAME})

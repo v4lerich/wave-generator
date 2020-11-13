@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.10)
-
+cmake_minimum_required(VERSION 3.15)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 project(WaveGenerator
     VERSION 0.1
     LANGUAGES CXX
@@ -24,3 +24,4 @@ find_package(OpenGL REQUIRED)
 add_subdirectory(3rd_party/)
 add_subdirectory(lib/)
 add_subdirectory(app/)
+add_subdirectory(res/)

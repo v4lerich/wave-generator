@@ -5,7 +5,6 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/backends/imgui_impl_sdl.h>
 #include <imgui/imgui.h>
-#include <spdlog/spdlog.h>
 
 #include "application_config.h"
 #include "glad2_loader.h"
@@ -16,7 +15,7 @@ Application::Application(int /*argc*/, char** /*argv*/) {}
 
 auto Application::Init() -> ReturnCode {
     ReturnCode return_code = 0;
-    spdlog::set_level(config::kLogLevel);
+    SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, config::kLogLevel);
 
     return_code = InitSdl();
     if (return_code != 0) return return_code;
@@ -32,7 +31,7 @@ auto Application::Init() -> ReturnCode {
 
 auto Application::InitSdl() -> ReturnCode {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
-        spdlog::critical("SDL Init error: {}", SDL_GetError());
+        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "SDL Init error: %d", SDL_GetError());
         return -1;
     }
 
@@ -76,7 +75,7 @@ auto Application::CreateMainWindow() -> ReturnCode {
     SDL_GL_SetSwapInterval(static_cast<int>(config::kVsyncEnable));
 
     if (gl_loader::LoadGl()) {
-        spdlog::critical("GL Context not loaded");
+        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "GL Context not loaded");
         return -1;
     }
     return 0;
@@ -86,8 +85,10 @@ auto Application::InitImGui() -> ReturnCode {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     imgui_io_ = &ImGui::GetIO();
+    imgui_io_->IniFilename = nullptr;
     imgui_io_->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     imgui_io_->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    imgui_io_->ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
 
     if (config::kImGuiTheme == config::ApplicationTheme::kDark) {
         ImGui::StyleColorsDark();
@@ -99,6 +100,7 @@ auto Application::InitImGui() -> ReturnCode {
 
     ImGui_ImplSDL2_InitForOpenGL(main_window_, gl_context_);
     ImGui_ImplOpenGL3_Init(config::kGlslVersion);
+    imgui_io_->Fonts->AddFontFromFileTTF(config::kFontPath.c_str(), 17.0F);
     return 0;
 }
 
@@ -120,9 +122,12 @@ void Application::RenderView() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame(main_window_);
     ImGui::NewFrame();
+    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 
     for (auto& view : views_) {
         view->Render();
+        if (view->WantClose())
+            done_ = true;
     }
 
     ImGui::Render();
