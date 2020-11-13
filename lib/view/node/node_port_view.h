@@ -21,7 +21,7 @@ class NodeInputView {
                            bool has_port = false);
     void Render(ImDrawList* draw_list);
 
-    void Connect(const NodeOutputView* output);
+    void Connect(NodeOutputView* output);
     void Disconnect();
 
     auto GetPortPosition() const -> ImVec2;
@@ -40,7 +40,7 @@ class NodeInputView {
     static auto GetID() -> int;
     static int counter_id_;
 
-    const NodeOutputView* connected_output_{nullptr};
+    NodeOutputView* connected_output_{nullptr};
     const NodeView& parent_;
     int id_;
     bool has_port_;
@@ -57,8 +57,8 @@ class NodeOutputView {
     auto GetPortSize() const -> ImVec2;
     auto GetPortRect() const -> ImRect;
 
-    void Connect(const NodeInputView* input);
-    void Disconnect(const NodeInputView* input);
+    void Connect(NodeInputView* input);
+    void Disconnect(NodeInputView* input);
     auto IsConnecting() const -> bool;
 
   private:

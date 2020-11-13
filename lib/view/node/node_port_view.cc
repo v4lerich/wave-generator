@@ -17,7 +17,7 @@ static const float kPortRadius = 6;
 
 int NodeInputView::counter_id_ = 0;
 
-static void RenderPort(ImDrawList* draw_list, ImVec2 position) {
+static void RenderPort(ImDrawList* draw_list, ImVec2 position, ImGuiButtonFlags flags = 0) {
     const auto port_size = ImVec2{kPortRadius, kPortRadius} * 2.0;
 
     draw_list->ChannelsSetCurrent(1);
@@ -26,7 +26,7 @@ static void RenderPort(ImDrawList* draw_list, ImVec2 position) {
     draw_list->AddCircleFilled(position, kPortRadius, kInputPortBackgroundColor);
     draw_list->AddCircle(position, kPortRadius, kInputPortBorderColor);
 
-    ImGui::InvisibleButton("port_button", port_size * 2);
+    ImGui::InvisibleButton("port_button", port_size * 2, flags);
 }
 
 static void RenderLink(ImDrawList* draw_list, ImVec2 from_position, ImVec2 to_position) {
@@ -52,9 +52,14 @@ void NodeInputView::Render(ImDrawList* draw_list) {
         auto item_rect =
             ImRect{ImGui::GetItemRectMin(), ImGui::GetItemRectMax()};
         port_position_ = {parent_.GetOuterRect().Min.x, item_rect.GetCenter().y};
-        RenderPort(draw_list, port_position_);
+        RenderPort(draw_list, port_position_, ImGuiButtonFlags_PressedOnClickRelease);
 
-        if (connected_output_) {
+        if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
+            connected_output_->Disconnect(this);
+            Disconnect();
+        }
+
+        if (connected_output_ != nullptr) {
             RenderLink(draw_list, connected_output_->GetPortPosition(),
                        port_position_);
         }
@@ -63,7 +68,7 @@ void NodeInputView::Render(ImDrawList* draw_list) {
     ImGui::PopID();
 }
 
-void NodeInputView::Connect(const NodeOutputView* output) {
+void NodeInputView::Connect(NodeOutputView* output) {
     if (connected_output_ == nullptr) {
         connected_output_ = output;
     }
@@ -87,7 +92,7 @@ auto NodeInputView::GetPortRect() const -> ImRect {
 
 auto NodeInputView::CanConnect(const NodeOutputView* output) const
     -> bool {
-    return true;
+    return false;
 }
 
 auto NodeInputView::HasPort() const -> bool { return has_port_; }
@@ -121,11 +126,11 @@ auto NodeOutputView::GetPortRect() const -> ImRect {
 }
 auto NodeOutputView::GetPortSize() const -> ImVec2 { return {2 * kPortRadius, 2 * kPortRadius}; }
 
-void NodeOutputView::Connect(const NodeInputView* input) {
+void NodeOutputView::Connect(NodeInputView* input) {
     connected_inputs_.insert(input);
 }
 
-void NodeOutputView::Disconnect(const NodeInputView* input) {
+void NodeOutputView::Disconnect(NodeInputView* input) {
     connected_inputs_.erase(input);
 }
 
