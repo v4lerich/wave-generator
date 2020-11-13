@@ -17,13 +17,15 @@ class NodeOutputView;
 
 class NodeInputView {
   public:
-    explicit NodeInputView(const NodeView& parent, std::string name = "Input",
+    explicit NodeInputView(const NodeView* parent, std::string name = "Input",
                            bool has_port = false);
+    virtual ~NodeInputView() = default;
     void Render(ImDrawList* draw_list);
 
     void Connect(NodeOutputView* output);
     void Disconnect();
 
+    auto GetConnectedNode() const -> const NodeView*;
     auto GetPortPosition() const -> ImVec2;
     auto GetPortSize() const -> ImVec2;
     auto GetPortRect() const -> ImRect;
@@ -41,7 +43,7 @@ class NodeInputView {
     static int counter_id_;
 
     NodeOutputView* connected_output_{nullptr};
-    const NodeView& parent_;
+    const NodeView* parent_;
     int id_;
     bool has_port_;
     std::string name_;
@@ -50,9 +52,11 @@ class NodeInputView {
 
 class NodeOutputView {
   public:
-    explicit NodeOutputView(const NodeView& parent,
-                            std::string name = "Output");
+    explicit NodeOutputView(const NodeView* parent, std::string name = "Output");
+    virtual ~NodeOutputView() = default;
     void Render(ImDrawList* draw_list);
+
+    auto GetNode() const -> const NodeView*;
     auto GetPortPosition() const -> ImVec2;
     auto GetPortSize() const -> ImVec2;
     auto GetPortRect() const -> ImRect;
@@ -63,8 +67,8 @@ class NodeOutputView {
     auto IsConnecting() const -> bool;
 
   private:
-    std::unordered_set<NodeInputView *> connected_inputs_{};
-    const NodeView& parent_;
+    std::unordered_set<NodeInputView*> connected_inputs_{};
+    const NodeView* parent_;
     std::string name_;
     ImVec2 position_{};
 

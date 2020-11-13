@@ -1,12 +1,14 @@
 #ifndef WAVEGENERATOR_EDITOR_VIEW_H
 #define WAVEGENERATOR_EDITOR_VIEW_H
 
+#include <node/node_view_factory.h>
+#include <node/node_views.h>
+
+#include <list>
 #include <memory>
 #include <string>
-#include <list>
 
 #include "node/node_view.h"
-#include "node/node_views.h"
 #include "view.h"
 
 namespace wave_generator::view {
@@ -24,8 +26,9 @@ class EditorView : public View {
 
     node::NodeViewFactoryStorage factory_storage_{};
     std::list<std::shared_ptr<node::NodeView>> nodes_{};
+    std::shared_ptr<node::NodeView> sink_;
+
     ImVec2 scrolling_offset_{};
-    bool is_open_{true};
 };
 
 };  // namespace wave_generator::view

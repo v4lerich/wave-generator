@@ -31,14 +31,12 @@ static void RenderPort(ImDrawList* draw_list, ImVec2 position, ImGuiButtonFlags 
 
 static void RenderLink(ImDrawList* draw_list, ImVec2 from_position, ImVec2 to_position) {
     draw_list->ChannelsSetCurrent(1);
-    draw_list->AddBezierCurve(
-        from_position, from_position + kLinkBezierOffset,
-        to_position - kLinkBezierOffset, to_position,
-        kLinkColor, kLinkThikness);
+    draw_list->AddBezierCurve(from_position, from_position + kLinkBezierOffset,
+                              to_position - kLinkBezierOffset, to_position, kLinkColor,
+                              kLinkThikness);
 }
 
-NodeInputView::NodeInputView(const NodeView& parent, std::string name,
-                             bool has_port)
+NodeInputView::NodeInputView(const NodeView* parent, std::string name, bool has_port)
     : parent_{parent}, id_{GetID()}, name_{std::move(name)}, has_port_{has_port} {}
 
 void NodeInputView::Render(ImDrawList* draw_list) {
@@ -49,9 +47,8 @@ void NodeInputView::Render(ImDrawList* draw_list) {
     ImGui::EndGroup();
 
     if (has_port_) {
-        auto item_rect =
-            ImRect{ImGui::GetItemRectMin(), ImGui::GetItemRectMax()};
-        port_position_ = {parent_.GetOuterRect().Min.x, item_rect.GetCenter().y};
+        auto item_rect = ImRect{ImGui::GetItemRectMin(), ImGui::GetItemRectMax()};
+        port_position_ = {parent_->GetOuterRect().Min.x, item_rect.GetCenter().y};
         RenderPort(draw_list, port_position_, ImGuiButtonFlags_PressedOnClickRelease);
 
         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
@@ -60,8 +57,7 @@ void NodeInputView::Render(ImDrawList* draw_list) {
         }
 
         if (connected_output_ != nullptr) {
-            RenderLink(draw_list, connected_output_->GetPortPosition(),
-                       port_position_);
+            RenderLink(draw_list, connected_output_->GetPortPosition(), port_position_);
         }
     }
 
@@ -96,23 +92,25 @@ auto NodeInputView::GetPortRect() const -> ImRect {
     return rect;
 }
 
-auto NodeInputView::CanConnect(const NodeOutputView* output) const
-    -> bool {
-    return false;
-}
+auto NodeInputView::CanConnect(const NodeOutputView* output) const -> bool { return false; }
 
 auto NodeInputView::HasPort() const -> bool { return has_port_; }
 
-NodeOutputView::NodeOutputView(const NodeView& parent, std::string name)
+auto NodeInputView::GetConnectedNode() const -> const NodeView* {
+    if (connected_output_ == nullptr) return nullptr;
+    return connected_output_->GetNode();
+}
+
+NodeOutputView::NodeOutputView(const NodeView* parent, std::string name)
     : parent_{parent}, name_{std::move(name)} {}
 
-void NodeOutputView::Render(ImDrawList *draw_list) {
+void NodeOutputView::Render(ImDrawList* draw_list) {
     ImGui::BeginGroup();
     ImGui::Text("%s", name_.c_str());
     ImGui::EndGroup();
 
     auto item_rect = ImRect{ImGui::GetItemRectMin(), ImGui::GetItemRectMax()};
-    position_ = {parent_.GetOuterRect().Max.x, item_rect.GetCenter().y};
+    position_ = {parent_->GetOuterRect().Max.x, item_rect.GetCenter().y};
     RenderPort(draw_list, position_);
 
     is_connecting_ = ImGui::IsItemDeactivated();
@@ -150,5 +148,7 @@ void NodeOutputView::DisconnectAll() {
         Disconnect(*std::begin(connected_inputs_));
     }
 }
+
+auto NodeOutputView::GetNode() const -> const NodeView* { return parent_; }
 
 }  // namespace wave_generator::view::node

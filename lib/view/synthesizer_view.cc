@@ -22,12 +22,11 @@ void SynthesizerView::BeginDockingWindow() {
     ImGui::SetNextWindowPos(viewport->GetWorkPos());
     ImGui::SetNextWindowSize(viewport->GetWorkSize());
 
-    ImGuiWindowFlags window_flags =
-        ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
                     ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                    ImGuiWindowFlags_NoBringToFrontOnFocus |
-                    ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground;
+                    ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+                    ImGuiWindowFlags_NoBackground;
 
     bool show_dock_window = true;
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0F);
@@ -35,24 +34,20 @@ void SynthesizerView::BeginDockingWindow() {
     ImGui::Begin("DockSpace Demo", &show_dock_window, window_flags);
     ImGui::PopStyleVar();
 
-    const ImGuiDockNodeFlags docking_flags =
-        ImGuiDockNodeFlags_PassthruCentralNode;
+    const ImGuiDockNodeFlags docking_flags = ImGuiDockNodeFlags_PassthruCentralNode;
     InitDockingLayout();
     ImGui::DockSpace(ImGui::GetID(kDockspaceName.c_str()), {0, 0});
 }
 
 void SynthesizerView::InitDockingLayout() {
-    if (ImGui::DockBuilderGetNode(ImGui::GetID(kDockspaceName.c_str())) ==
-        nullptr) {
+    if (ImGui::DockBuilderGetNode(ImGui::GetID(kDockspaceName.c_str())) == nullptr) {
         ImGuiID dockspace_id = ImGui::GetID(kDockspaceName.c_str());
         ImGui::DockBuilderRemoveNode(dockspace_id);
         ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
-        ImGui::DockBuilderSetNodeSize(dockspace_id,
-                                      ImGui::GetWindowViewport()->Size);
+        ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetWindowViewport()->Size);
 
         ImGuiID dock_main_id = dockspace_id;
-        ImGui::DockBuilderDockWindow(editor_view_->WindowName().c_str(),
-                                     dock_main_id);
+        ImGui::DockBuilderDockWindow(editor_view_->WindowName().c_str(), dock_main_id);
         ImGui::DockBuilderFinish(dockspace_id);
     }
 }

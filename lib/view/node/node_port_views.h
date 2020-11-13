@@ -1,13 +1,18 @@
 #ifndef WAVEGENERATOR_NODE_PORT_VIEWS_H
 #define WAVEGENERATOR_NODE_PORT_VIEWS_H
 
-#include "node_port_view.h"
+#include "node_view.h"
 
 namespace wave_generator::view::node {
 
+class SignalGeneratorNodeView;
+
 class SignalPortInputView final : public NodeInputView {
   public:
-    explicit SignalPortInputView(const NodeView& parent, std::string name);
+    explicit SignalPortInputView(const NodeView* parent, std::string name);
+    auto GetConnectedSignalNode() const -> const SignalGeneratorNodeView*;
+
+    bool CanConnect(const NodeOutputView* output) const override;
 
   protected:
     void RenderItem(ImDrawList* draw_list) override;
@@ -15,8 +20,7 @@ class SignalPortInputView final : public NodeInputView {
 
 class FloatInputView final : public NodeInputView {
   public:
-    explicit FloatInputView(const NodeView& parent, std::string name,
-                            ImVec2 range = {0.0F, 1.0F},
+    explicit FloatInputView(const NodeView* parent, std::string name, ImVec2 range = {0.0F, 1.0F},
                             float default_value = 1.0F);
     auto GetValue() const -> float;
 
@@ -30,7 +34,7 @@ class FloatInputView final : public NodeInputView {
 
 class SignalPortOutputView final : public NodeOutputView {
   public:
-    explicit SignalPortOutputView(const NodeView& parent, std::string name = "Output");
+    explicit SignalPortOutputView(const NodeView* parent, std::string name = "Output");
 };
 
 }  // namespace wave_generator::view::node
