@@ -15,8 +15,8 @@ add_library(wave-generator::view
     ALIAS ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE imgui icon-font-headers
-    PUBLIC wave-generator::synthesizer)
+    PRIVATE icon-font-headers
+    PUBLIC imgui wave-generator::synthesizer wave-generator::model)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC .)
