@@ -14,6 +14,7 @@ static const std::string kPlayButtonText = std::string(ICON_FK_PLAY) + " Play";
 static const std::string kPauseButtonText = std::string(ICON_FK_PAUSE) + " Pause";
 static const model::SoundDevice::Config kSoundDeviceConfig = {
     .frequency = 48000,
+    .buffer_size = 1 << 14,
     .samples = 4096,
 };
 

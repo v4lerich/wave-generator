@@ -1,17 +1,15 @@
-#include "sound_generator.h"
+#include "signal_samples_generator.h"
 
-#include <utility>
 #include <algorithm>
+#include <utility>
 
 namespace wave_generator::model {
 
-SoundGenerator::SoundGenerator(Config config, SignalGeneratorPtr generator)
+SignalSamplesGenerator::SignalSamplesGenerator(Config config, SignalGeneratorPtr generator)
     : generator_{std::move(generator)}, config_{config}, samples_buffer_(config_.buffer_size)
 {}
 
-auto SoundGenerator::GetFormat() const -> SDL_AudioFormat { return AUDIO_F32; }
-
-auto SoundGenerator::GenerateSamples(uint8_t* buffer, size_t samples_count) const -> bool {
+auto SignalSamplesGenerator::GenerateSamples(float* buffer, size_t samples_count) -> bool {
     std::unique_lock<std::mutex> lock{generator_mutex_};
 
     auto generator = std::atomic_load(&generator_);
@@ -23,8 +21,8 @@ auto SoundGenerator::GenerateSamples(uint8_t* buffer, size_t samples_count) cons
     return bool(generator);
 }
 
-void SoundGenerator::GenerateSamples(SignalGeneratorPtr generator, uint8_t* buffer,
-                                     size_t samples_count) const {
+void SignalSamplesGenerator::GenerateSamples(SignalGeneratorPtr generator, float* buffer,
+                                     size_t samples_count) {
     while (samples_count > 0) {
         auto batch_length = std::min(config_.buffer_size, samples_count);
         auto sample_step = 1.0 / config_.frequency;
@@ -32,24 +30,23 @@ void SoundGenerator::GenerateSamples(SignalGeneratorPtr generator, uint8_t* buff
         std::generate_n(std::begin(samples_buffer_), batch_length,
                         [&] () { return float(generator->SampleAfter(sample_step)); });
 
-        auto batch_bytes_count = sizeof(decltype(samples_buffer_)::value_type) * samples_count;
-        memcpy(buffer, samples_buffer_.data(), batch_bytes_count);
+        memcpy(buffer, samples_buffer_.data(), batch_length);
 
         samples_count -= batch_length;
-        buffer += batch_bytes_count;
+        buffer += batch_length;
     }
 }
 
-void SoundGenerator::SetGenerator(SignalGeneratorPtr generator) {
+void SignalSamplesGenerator::SetGenerator(SignalGeneratorPtr generator) {
     std::atomic_store(&generator_, std::move(generator));
 }
 
-auto SoundGenerator::CanGenerate() const -> bool {
+auto SignalSamplesGenerator::CanGenerate() const -> bool {
     auto generator = std::atomic_load(&generator_);
     return bool(generator);
 }
 
-void SoundGenerator::Reset() {
+void SignalSamplesGenerator::Reset() {
     std::unique_lock<std::mutex> lock{generator_mutex_};
 
     if (generator_) {
