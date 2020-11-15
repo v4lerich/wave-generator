@@ -21,9 +21,10 @@ SoundDevice::SoundDevice(Config config)
     audio_spec_.channels = 1;
     audio_spec_.userdata = this;
     audio_spec_.samples = config.samples;
-    audio_spec_.format = AUDIO_F32;
+    audio_spec_.format = AUDIO_F32SYS;
 
-    if (SDL_OpenAudio(&audio_spec_, nullptr) < 0) {
+    SDL_AudioSpec obtained_spec;
+    if (SDL_OpenAudio(&audio_spec_, &obtained_spec) < 0) {
         exit(-1);
     }
 
@@ -31,6 +32,7 @@ SoundDevice::SoundDevice(Config config)
 }
 
 SoundDevice::~SoundDevice() {
+    cacher_.Shutdown();
     SDL_CloseAudio();
 }
 
@@ -59,11 +61,13 @@ void SoundDevice::GenerateSamples(void* device_pointer, uint8_t* stream, int len
 }
 
 void SoundDevice::GenerateSamples(uint8_t* stream, size_t length) {
-    cacher_.GenerateSamples(reinterpret_cast<float*>(stream), length);
+    cacher_.GenerateSamples(reinterpret_cast<float*>(stream), length / 4);
 }
 
 void SoundDevice::Reset() {
     buffer_.resize(config_.buffer_size);
 }
+
+auto SoundDevice::GetQueueSize() -> size_t { return cacher_.GetQueueSize(); }
 
 }

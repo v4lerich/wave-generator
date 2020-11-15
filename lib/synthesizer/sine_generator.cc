@@ -15,7 +15,7 @@ SineGenerator::SineGenerator(double base_amplitude, double base_frequency,
                                   std::move(frequency_signal)) {}
 
 auto SineGenerator::Evaluate(double phase) -> double {
-    return sin(M_PI_2 * phase);
+    return sin(2 * M_PI * phase);
 }
 
 }  // namespace wave_generator::synthesizer

@@ -32,6 +32,8 @@ class SoundDevice {
     auto IsPlaying() const -> bool;
     void SetGenerator(SignalGeneratorPtr generator);
 
+    auto GetQueueSize() -> size_t;
+
   private:
     void Reset();
     void GenerateSamples(uint8_t* buffer, size_t size);

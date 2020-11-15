@@ -23,18 +23,9 @@ auto SignalSamplesGenerator::GenerateSamples(float* buffer, size_t samples_count
 
 void SignalSamplesGenerator::GenerateSamples(SignalGeneratorPtr generator, float* buffer,
                                      size_t samples_count) {
-    while (samples_count > 0) {
-        auto batch_length = std::min(config_.buffer_size, samples_count);
-        auto sample_step = 1.0 / config_.frequency;
-
-        std::generate_n(std::begin(samples_buffer_), batch_length,
-                        [&] () { return float(generator->SampleAfter(sample_step)); });
-
-        memcpy(buffer, samples_buffer_.data(), batch_length);
-
-        samples_count -= batch_length;
-        buffer += batch_length;
-    }
+    auto sample_step = 1.0 / config_.frequency;
+    std::generate_n(buffer, samples_count,
+                    [&] () { return float(generator->SampleAfter(sample_step)); });
 }
 
 void SignalSamplesGenerator::SetGenerator(SignalGeneratorPtr generator) {

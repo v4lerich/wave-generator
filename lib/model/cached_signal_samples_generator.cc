@@ -29,6 +29,7 @@ auto CachedSignalSamplesGenerator::UnCacheChunks(size_t count) -> SamplesChunkCo
             cache_,
             std::begin(cache_));
 
+        cache_chunk_count_ -= count;
         is_cache_not_empty_.notify_all();
         is_cache_not_full_.notify_all();
     }
@@ -68,6 +69,9 @@ void CachedSignalSamplesGenerator::Shutdown() {
     is_caching_cond_.notify_all();
     is_cache_not_full_.notify_all();
     is_cache_not_empty_.notify_all();
+
+    if (cacher_thread_.joinable())
+        cacher_thread_.join();
 }
 
 void CachedSignalSamplesGenerator::Stop() {
@@ -116,13 +120,22 @@ void CachedSignalSamplesGenerator::GenerateSamples(float* buffer, size_t size) {
             cache_chunk_it_ = std::begin(cache_chunk_);
         }
 
-        auto batch_size = std::min(ssize_t(size), std::distance(std::end(cache_chunk_), cache_chunk_it_));
-        memcpy(buffer, cache_chunk_it_.base(), batch_size);
+        auto batch_size = std::min(ssize_t(size), std::distance(cache_chunk_it_, std::end(cache_chunk_)));
+        std::copy(cache_chunk_it_, std::next(cache_chunk_it_, batch_size), buffer);
 
         size -= batch_size;
         std::advance(buffer, batch_size);
         std::advance(cache_chunk_it_, batch_size);
     }
 }
+
+CachedSignalSamplesGenerator::~CachedSignalSamplesGenerator() {
+    Shutdown();
+    if (cacher_thread_.joinable()) {
+        cacher_thread_.join();
+    }
+}
+
+auto CachedSignalSamplesGenerator::GetQueueSize() -> size_t { return cache_chunk_count_; }
 
 }

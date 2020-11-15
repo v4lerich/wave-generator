@@ -9,7 +9,7 @@ namespace wave_generator::synthesizer {
 
 class TriangularGenerator : public AmplitudeFrequencyGenerator {
   public:
-    TriangularGenerator(double base_frequency, double base_amplitude,
+    TriangularGenerator(double base_amplitude, double base_frequency,
                         std::unique_ptr<SignalGenerator> amplitude_signal,
                         std::unique_ptr<SignalGenerator> frequency_signal);
 

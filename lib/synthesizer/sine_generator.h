@@ -9,7 +9,7 @@ namespace wave_generator::synthesizer {
 
 class SineGenerator : public AmplitudeFrequencyGenerator {
   public:
-    SineGenerator(double base_frequency, double base_amplitude,
+    SineGenerator(double base_amplitude, double base_frequency,
                   std::unique_ptr<SignalGenerator> amplitude_signal,
                   std::unique_ptr<SignalGenerator> frequency_signal);
 

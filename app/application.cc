@@ -146,6 +146,8 @@ void Application::RenderView() {
 }
 
 auto Application::Finalize() -> Application::ReturnCode {
+    views_.clear();
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();

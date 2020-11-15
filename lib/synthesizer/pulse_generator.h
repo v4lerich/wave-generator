@@ -11,7 +11,7 @@ class PulseGenerator : public AmplitudeFrequencyGenerator {
   public:
     PulseGenerator(
         double duty_cycle,
-        double base_frequency, double base_amplitude,
+        double base_amplitude, double base_frequency,
         std::unique_ptr<SignalGenerator> amplitude_signal,
         std::unique_ptr<SignalGenerator> frequency_signal);
 
