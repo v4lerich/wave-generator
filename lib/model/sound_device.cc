@@ -7,26 +7,24 @@
 namespace wave_generator::model {
 
 SoundDevice::SoundDevice(Config config)
-    : config_{config}, cacher_{{
-        .samples_chunk_size = config.samples_chunk_size,
-        .cache_samples_chunks = config.cache_samples_chunks,
-        .generator_config = {
-            .frequency = config.frequency,
-            .buffer_size = config.samples,
-        }
-    }} {
+    : config_{config}, cacher_{config.cacher_config} {
 
-    audio_spec_.freq = config.frequency;
+    audio_spec_.freq = config_.cacher_config.generator_config.frequency;
     audio_spec_.callback = GenerateSamples;
-    audio_spec_.channels = 1;
+    audio_spec_.channels = config_.cacher_config.generator_config.channels;
     audio_spec_.userdata = this;
-    audio_spec_.samples = config.samples;
-    audio_spec_.format = AUDIO_F32SYS;
+    audio_spec_.samples = config_.samples;
+    audio_spec_.format = AUDIO_F32;
 
     SDL_AudioSpec obtained_spec;
-    if (SDL_OpenAudio(&audio_spec_, &obtained_spec) < 0) {
+    if (SDL_OpenAudio(&audio_spec_, &obtained_spec) < 0 || obtained_spec.format != AUDIO_F32) {
         exit(-1);
     }
+    audio_spec_ = obtained_spec;
+
+    config_.cacher_config.generator_config.frequency = audio_spec_.freq;
+    config_.cacher_config.generator_config.channels = audio_spec_.channels;
+    config_.samples = audio_spec_.samples;
 
     Reset();
 }
@@ -36,9 +34,9 @@ SoundDevice::~SoundDevice() {
     SDL_CloseAudio();
 }
 
-void SoundDevice::SetGenerator(SignalGeneratorPtr generator) {
+void SoundDevice::SetGenerator(size_t channel, SignalGeneratorPtr generator) {
     Reset();
-    cacher_.SetGenerator(std::move(generator));
+    cacher_.SetGenerator(channel, std::move(generator));
 }
 
 auto SoundDevice::IsPlaying() const -> bool { return is_playing_; }
@@ -65,9 +63,24 @@ void SoundDevice::GenerateSamples(uint8_t* stream, size_t length) {
 }
 
 void SoundDevice::Reset() {
-    buffer_.resize(config_.buffer_size);
+    cacher_.Reset();
 }
 
 auto SoundDevice::GetQueueSize() -> size_t { return cacher_.GetQueueSize(); }
+
+void SoundDevice::UpdateConfig(SoundDevice::Config config) {
+    SDL_LockAudio();
+
+    config_ = config;
+    cacher_.UpdateConfig(config.cacher_config);
+    Reset();
+
+    SDL_UnlockAudio();
+
+}
+
+auto SoundDevice::GetConfig() const -> const Config& {
+    return config_;
+}
 
 }

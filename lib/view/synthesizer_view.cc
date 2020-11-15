@@ -5,6 +5,21 @@
 namespace wave_generator::view {
 
 static const std::string kDockspaceName = "main_dockspace";
+static const model::SoundDevice::Config kSoundDeviceConfig = {.cacher_config = {
+    .samples_chunk_size = 4096,
+    .cache_samples_chunks = 100,
+    .generator_config =
+        {
+            .frequency = 48000,
+            .channels = 2,
+        },
+}};
+
+SynthesizerView::SynthesizerView()
+    : sound_device_{std::make_shared<model::SoundDevice>(kSoundDeviceConfig)},
+    editor_view_{sound_device_},
+    player_view_{sound_device_, std::bind(&SynthesizerView::CreateGenerators, this)}
+{}
 
 void SynthesizerView::Render() {
     BeginDockingWindow();
@@ -53,7 +68,8 @@ void SynthesizerView::InitDockingLayout() {
         ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetWindowViewport()->Size);
 
         ImGuiID dock_main_id = dockspace_id;
-        ImGuiID dock_up_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Up, 0, nullptr, &dock_main_id);
+        ImGuiID dock_up_id =
+            ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Up, 0, nullptr, &dock_main_id);
 
         ImGui::DockBuilderDockWindow(player_view_.WindowName().c_str(), dock_up_id);
         ImGui::DockBuilderDockWindow(editor_view_.WindowName().c_str(), dock_main_id);
@@ -76,6 +92,10 @@ void SynthesizerView::RenderMenuBar() {
         }
         ImGui::EndMenuBar();
     }
+}
+
+auto SynthesizerView::CreateGenerators() -> std::vector<SignalGeneratorPtr> {
+    return editor_view_.CreateGenerators();
 }
 
 }  // namespace wave_generator::view

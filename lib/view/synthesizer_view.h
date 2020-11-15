@@ -13,6 +13,9 @@ namespace wave_generator::view {
 
 class SynthesizerView : public View {
   public:
+    using SignalGeneratorPtr = std::unique_ptr<synthesizer::SignalGenerator>;
+
+    SynthesizerView();
     void Render() override;
 
   private:
@@ -22,6 +25,9 @@ class SynthesizerView : public View {
 
     void RenderMenuBar();
 
+    auto CreateGenerators() -> std::vector<SignalGeneratorPtr>;
+
+    std::shared_ptr<model::SoundDevice> sound_device_;
     PlayerView player_view_;
     EditorView editor_view_;
 };

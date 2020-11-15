@@ -9,18 +9,13 @@
 
 namespace wave_generator::model {
 
-constexpr size_t kSampleSize = 4096;
-
 class SoundDevice {
   public:
     using SignalGeneratorPtr = std::shared_ptr<synthesizer::SignalGenerator>;
 
     struct Config {
-        int frequency;
-        size_t buffer_size;
+        CachedSignalSamplesGenerator::Config cacher_config;
         size_t samples;
-        size_t samples_chunk_size;
-        size_t cache_samples_chunks;
     };
 
     explicit SoundDevice(Config config);
@@ -30,9 +25,12 @@ class SoundDevice {
     void Pause();
 
     auto IsPlaying() const -> bool;
-    void SetGenerator(SignalGeneratorPtr generator);
+    void SetGenerator(size_t channel, SignalGeneratorPtr generator);
 
     auto GetQueueSize() -> size_t;
+
+    auto GetConfig() const -> const Config&;
+    void UpdateConfig(Config config);
 
   private:
     void Reset();
@@ -45,6 +43,8 @@ class SoundDevice {
     std::vector<float> buffer_{};
     bool is_playing_{};
 };
+
+using SoundDevicePtr = std::shared_ptr<SoundDevice>;
 
 }
 

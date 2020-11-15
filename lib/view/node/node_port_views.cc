@@ -24,14 +24,44 @@ bool SignalPortInputView::CanConnect(const NodeOutputView* output) const {
 }
 
 FloatInputView::FloatInputView(const NodeView* parent, std::string name, ImVec2 range,
-                               float default_value)
-    : NodeInputView{parent, std::move(name)}, range_{range}, value_{default_value} {}
+                               float default_value, Type type)
+    : NodeInputView{parent, std::move(name)}, range_{range}, value_{default_value}, type_{type} {}
 
 auto FloatInputView::GetValue() const -> float { return value_; }
 
 void FloatInputView::RenderItem(ImDrawList* draw_list) {
-    ImGui::SliderFloat("", &value_, range_[0], range_[1], (GetName() + ": %.3f").c_str());
+    ImGuiSliderFlags flags = ImGuiSliderFlags_None;
+    if (type_ == Type::Logarithmic) {
+        flags |= ImGuiSliderFlags_Logarithmic;
+    }
+    ImGui::SliderFloat("", &value_, range_[0], range_[1], (GetName() + ": %.3f").c_str(), flags);
 }
+
+SwitchInputView::SwitchInputView(const NodeView* parent, std::string name,
+                                 std::vector<std::string> cases)
+    : NodeInputView{parent, std::move(name), false}, cases_(cases), case_{cases.front()} {}
+
+auto SwitchInputView::GetCase() const -> std::string { return case_; }
+
+void SwitchInputView::RenderItem(ImDrawList* draw_list) {
+    has_changed_ = false;
+    ImGui::BeginGroup();
+    if (ImGui::BeginCombo("", (GetName() + ": " + case_).c_str())) {
+        for (const auto& case_element : cases_) {
+            if (ImGui::Selectable(case_element.c_str(), case_element == case_)) {
+                has_changed_ = case_ != case_element;
+                case_ = case_element;
+            }
+            if (case_element == case_) {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::EndGroup();
+}
+
+bool SwitchInputView::HasChanged() { return has_changed_; }
 
 SignalPortOutputView::SignalPortOutputView(const NodeView* parent, std::string name)
     : NodeOutputView{parent, std::move(name)} {}

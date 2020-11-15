@@ -15,25 +15,28 @@ class SignalSamplesGenerator {
     using SignalGeneratorPtr = std::shared_ptr<synthesizer::SignalGenerator>;
 
     struct Config {
-        int frequency;
-        size_t buffer_size;
+        size_t frequency;
+        size_t channels;
     };
 
-    explicit SignalSamplesGenerator(Config config, SignalGeneratorPtr generator = {});
+    explicit SignalSamplesGenerator(Config config);
 
     auto CanGenerate() const -> bool;
-    void SetGenerator(SignalGeneratorPtr generator);
+    void SetGenerator(size_t channel, SignalGeneratorPtr generator);
 
     auto GenerateSamples(float* buffer, size_t samples_count) -> bool;
     void Reset();
 
-  private:
-    void GenerateSamples(SignalGeneratorPtr generator, float* buffer, size_t samples_count);
+    void UpdateConfig(Config config);
 
-    SignalGeneratorPtr generator_;
+  private:
+    auto GenerateSample(float* buffer,
+                        double sample_step) const -> bool;
+
+    std::vector<SignalGeneratorPtr> generators_;
     Config config_;
 
-    std::mutex generator_mutex_{};
+    std::mutex mutex_{};
     std::vector<float> samples_buffer_;
 };
 

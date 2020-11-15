@@ -3,7 +3,10 @@
 #include <IconsForkAwesome.h>
 #include <imgui.h>
 #include <pulse_generator.h>
+#include <sawtooth_generator.h>
 #include <sine_generator.h>
+
+#include <utility>
 
 namespace wave_generator::view {
 
@@ -12,27 +15,15 @@ static constexpr float kWindowHeight = 20.0;
 static constexpr float kWindowPadding = 5.0;
 static const std::string kPlayButtonText = std::string(ICON_FK_PLAY) + " Play";
 static const std::string kPauseButtonText = std::string(ICON_FK_PAUSE) + " Pause";
-static const model::SoundDevice::Config kSoundDeviceConfig = {
-    .frequency = 48000,
-    .buffer_size = 1 << 14,
-    .samples = 1 << 12,
-    .samples_chunk_size = 1 << 14,
-    .cache_samples_chunks = 100,
-};
 
-PlayerView::PlayerView()
-    : sound_device_{std::make_shared<model::SoundDevice>(kSoundDeviceConfig)} {
-
-    auto generator = std::make_unique<synthesizer::SineGenerator>(
-        0.2, 1000, nullptr, nullptr);
-    sound_device_->SetGenerator(std::move(generator));
+PlayerView::PlayerView(model::SoundDevicePtr sound_device, PlayerView::GeneratorsBuilderFunc generators_builder)
+: generators_builder_{std::move(generators_builder)},
+sound_device_{std::move(sound_device)} {
 }
 
-void PlayerView::Render() {
-    RenderWindow();
-}
+void PlayerView::Render() { RenderWindow(); }
 
-auto PlayerView::WindowName() -> const std::string & { return kWindowName; }
+auto PlayerView::WindowName() -> const std::string& { return kWindowName; }
 
 void PlayerView::RenderWindow() {
     auto window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar;
@@ -44,6 +35,10 @@ void PlayerView::RenderWindow() {
         if (sound_device_->IsPlaying()) {
             sound_device_->Pause();
         } else {
+            auto generators = generators_builder_();
+            for (size_t i = 0; i < generators.size(); i++) {
+                sound_device_->SetGenerator(i, std::move(generators[i]));
+            }
             sound_device_->Play();
         }
     }
@@ -54,4 +49,4 @@ void PlayerView::RenderWindow() {
     ImGui::PopStyleVar();
 }
 
-}
+}  // namespace wave_generator::view

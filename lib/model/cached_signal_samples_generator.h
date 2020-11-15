@@ -24,7 +24,7 @@ class CachedSignalSamplesGenerator {
     explicit CachedSignalSamplesGenerator(Config config);
     ~CachedSignalSamplesGenerator();
 
-    void SetGenerator(SignalGeneratorPtr generator);
+    void SetGenerator(size_t channel, SignalGeneratorPtr generator);
     void Reset();
     void Start();
     void Stop();
@@ -33,6 +33,8 @@ class CachedSignalSamplesGenerator {
     void GenerateSamples(float* buffer, size_t size);
 
     auto GetQueueSize() -> size_t;
+
+    void UpdateConfig(Config config);
 
   private:
     using SamplesChunk = std::vector<float>;

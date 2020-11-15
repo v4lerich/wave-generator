@@ -91,10 +91,6 @@ void CachedSignalSamplesGenerator::Reset() {
     cache_chunk_count_ = 0;
 }
 
-void CachedSignalSamplesGenerator::SetGenerator(SignalGeneratorPtr generator) {
-    generator_.SetGenerator(std::move(generator));
-}
-
 void CachedSignalSamplesGenerator::DoCacheChunks() {
     while (!is_shutdown_) {
         {
@@ -137,5 +133,23 @@ CachedSignalSamplesGenerator::~CachedSignalSamplesGenerator() {
 }
 
 auto CachedSignalSamplesGenerator::GetQueueSize() -> size_t { return cache_chunk_count_; }
+
+void CachedSignalSamplesGenerator::SetGenerator(
+    size_t channel, SignalGeneratorPtr generator) {
+    generator_.SetGenerator(channel, std::move(generator));
+}
+
+void CachedSignalSamplesGenerator::UpdateConfig(Config config) {
+    bool is_caching = is_caching_;
+    if (is_caching)
+        Stop();
+
+    config_ = config;
+    generator_.UpdateConfig(config.generator_config);
+    Reset();
+
+    if (is_caching)
+        Start();
+}
 
 }

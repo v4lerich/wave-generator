@@ -36,6 +36,8 @@ class NodeView {
     auto GetOuterRect() const -> ImRect;
 
   protected:
+    virtual void BeginRender();
+    virtual void EndRender();
     virtual auto GetInputViews() -> std::list<NodeInputView *>;
     virtual auto GetOutputViews() -> std::list<NodeOutputView *>;
 

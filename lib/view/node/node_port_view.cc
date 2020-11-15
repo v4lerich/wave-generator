@@ -11,8 +11,8 @@ namespace wave_generator::view::node {
 static const ImColor kInputPortBackgroundColor = {150, 150, 150};
 static const ImColor kInputPortBorderColor = {170, 170, 170};
 static const ImColor kLinkColor = {150, 150, 150};
-static const ImVec2 kLinkBezierOffset = {10, 0};
-static const float kLinkThikness = 3;
+static const ImVec2 kLinkBezierOffset = {50, 0};
+static const float kLinkThickness = 3;
 static const float kPortRadius = 6;
 
 int NodeInputView::counter_id_ = 0;
@@ -30,7 +30,7 @@ static void RenderPort(ImDrawList* draw_list, ImVec2 position, ImGuiButtonFlags 
 static void RenderLink(ImDrawList* draw_list, ImVec2 from_position, ImVec2 to_position) {
     draw_list->AddBezierCurve(from_position, from_position + kLinkBezierOffset,
                               to_position - kLinkBezierOffset, to_position, kLinkColor,
-                              kLinkThikness);
+                              kLinkThickness);
 }
 
 NodeInputView::NodeInputView(const NodeView* parent, std::string name, bool has_port)
