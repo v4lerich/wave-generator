@@ -76,6 +76,7 @@ void NodeView::RenderNodeComponents(ImDrawList* draw_list, ImVec2 position) {
     ImGui::SetCursorScreenPos(position);
 
     ImGui::BeginGroup();
+    BeginRender();
     ImGui::Text("%s", name_.c_str());
     header_rect_.Min = ImGui::GetItemRectMin();
     ImGui::Dummy(ImVec2(0.0F, kHeaderPadding));
@@ -95,10 +96,13 @@ void NodeView::RenderNodeComponents(ImDrawList* draw_list, ImVec2 position) {
             connecting_output_ = output;
         }
     }
+    EndRender();
     ImGui::EndGroup();
 
     if (!is_initialized_) {
         size_ = ImGui::GetItemRectSize();
+    } else {
+        size_.y = ImGui::GetItemRectSize().y;
     }
 }
 
@@ -147,5 +151,9 @@ void NodeView::SetChannels(int foreground_channel, int background_channel) {
     foreground_channel_ = foreground_channel;
     background_channel_ = background_channel;
 }
+
+void NodeView::BeginRender() {}
+
+void NodeView::EndRender() {}
 
 }  // namespace wave_generator::view::node

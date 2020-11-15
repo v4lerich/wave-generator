@@ -4,8 +4,11 @@
 #include <pulse_generator.h>
 #include <sawtooth_generator.h>
 #include <sine_generator.h>
+#include <sound_device.h>
 #include <triangular_generator.h>
+#include <white_noise_generator.h>
 
+#include <algorithm>
 #include <utility>
 
 namespace wave_generator::view::node {
@@ -13,25 +16,75 @@ namespace wave_generator::view::node {
 SignalGeneratorNodeView::SignalGeneratorNodeView(std::string name, ImVec2 position)
     : NodeView{std::move(name), position} {}
 
-SignalSinkNodeView::SignalSinkNodeView(ImVec2 position)
-    : SignalGeneratorNodeView{"Sink", position}, input_node_{this, "Input"} {}
+SignalSinkNodeView::SignalSinkNodeView(model::SoundDevicePtr sound_device, ImVec2 position)
+    : NodeView{"Sink", position},
+      mode_input_{this, "Mode", {"Same", "Channels"}},
+      same_input_{this, "Input"},
+      sound_device_{std::move(sound_device)} {}
 
-std::list<NodeInputView *> SignalSinkNodeView::GetInputViews() { return {&input_node_}; }
+auto SignalSinkNodeView::GetInputViews() -> std::list<NodeInputView *> {
+    std::list<NodeInputView *> inputs{&mode_input_};
+    if (mode_input_.GetCase() == "Same") {
+        inputs.push_back(&same_input_);
+    } else {
+        for (auto &channel_input : channel_inputs_) {
+            inputs.push_back(&channel_input);
+        }
+    }
+    return inputs;
+}
 
-auto SignalSinkNodeView::CreateGenerator() const -> std::unique_ptr<synthesizer::SignalGenerator> {
-    auto connected_node = input_node_.GetConnectedSignalNode();
-    return (connected_node == nullptr) ? nullptr : connected_node->CreateGenerator();
+auto SignalSinkNodeView::CreateGenerators() const -> std::vector<SignalGeneratorPtr> {
+    std::vector<SignalGeneratorPtr> generators;
+    if (mode_input_.GetCase() == "Same") {
+        auto connected_node = same_input_.GetConnectedSignalNode();
+        for (auto &channel_input : channel_inputs_) {
+            auto generator =
+                (connected_node == nullptr) ? nullptr : connected_node->CreateGenerator();
+            generators.push_back(std::move(generator));
+        }
+    } else {
+        std::transform(std::begin(channel_inputs_), std::end(channel_inputs_),
+                       std::back_inserter(generators), [&](const auto &channel_input) {
+                           auto connected_node = channel_input.GetConnectedSignalNode();
+                           return (connected_node == nullptr) ? nullptr
+                                                              : connected_node->CreateGenerator();
+                       });
+    }
+    return generators;
 }
 
 auto SignalSinkNodeView::IsDeletable() const -> bool { return false; }
+
+void SignalSinkNodeView::SetChannels(size_t channels_count) {
+    if (channel_inputs_.size() == channels_count) return;
+
+    this->Disconnect();
+    channel_inputs_.clear();
+    for (size_t i = 0; i < channels_count; i++) {
+        channel_inputs_.emplace_back(this, "Input " + std::to_string(i));
+    }
+}
+
+auto SignalSinkNodeView::GetChannelsCount() -> size_t { return channel_inputs_.size(); }
+
+void SignalSinkNodeView::EndRender() {
+    if (mode_input_.HasChanged()) {
+        Disconnect();
+    }
+}
+
+void SignalSinkNodeView::BeginRender() {
+    SetChannels(sound_device_->GetConfig().cacher_config.generator_config.channels);
+}
 
 AmplitudeFrequencyGeneratorNodeView::AmplitudeFrequencyGeneratorNodeView(std::string name,
                                                                          ImVec2 position)
     : SignalGeneratorNodeView{std::move(name), position},
       amplitude_input_port_{this, "Amplitude"},
       frequency_input_port_{this, "Frequency"},
-      base_amplitude_input_{this, "Base amplitude"},
-      base_frequency_input_{this, "Base frequency"},
+      base_amplitude_input_{this, "Base amplitude", {0.0, 1.0}, 0.5},
+      base_frequency_input_{this, "Base frequency", {0.1, 22000}, 1000, FloatInputView::Type::Logarithmic},
       output_node_{this} {}
 
 auto AmplitudeFrequencyGeneratorNodeView::GenerateAmplitudeSignal() const
@@ -90,7 +143,7 @@ SineGeneratorNodeView::SineGeneratorNodeView(ImVec2 position)
 
 auto SineGeneratorNodeView::CreateGenerator() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    return std::make_unique<synthesizer::SineGenerator>(GetBaseFrequency(), GetBaseAmplitude(),
+    return std::make_unique<synthesizer::SineGenerator>(GetBaseAmplitude(), GetBaseFrequency(),
                                                         GenerateAmplitudeSignal(),
                                                         GenerateFrequencySignal());
 }
@@ -101,7 +154,7 @@ PulseGeneratorNodeView::PulseGeneratorNodeView(ImVec2 position)
 
 auto PulseGeneratorNodeView::CreateGenerator() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    return std::make_unique<synthesizer::SineGenerator>(GetBaseFrequency(), GetBaseAmplitude(),
+    return std::make_unique<synthesizer::SineGenerator>(GetBaseAmplitude(), GetBaseFrequency(),
                                                         GenerateAmplitudeSignal(),
                                                         GenerateFrequencySignal());
 }
@@ -117,7 +170,7 @@ SawtoothGeneratorNodeView::SawtoothGeneratorNodeView(ImVec2 position)
 
 auto SawtoothGeneratorNodeView::CreateGenerator() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    return std::make_unique<synthesizer::SawtoothGenerator>(GetBaseFrequency(), GetBaseAmplitude(),
+    return std::make_unique<synthesizer::SawtoothGenerator>(GetBaseAmplitude(), GetBaseFrequency(),
                                                             GenerateAmplitudeSignal(),
                                                             GenerateFrequencySignal());
 }
@@ -127,8 +180,7 @@ TriangularGeneratorNodeView::TriangularGeneratorNodeView(ImVec2 position)
 
 auto TriangularGeneratorNodeView::CreateGenerator() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    return std::make_unique<synthesizer::TriangularGenerator>(
-        GetBaseFrequency(), GetBaseAmplitude(), GenerateAmplitudeSignal(),
+    return std::make_unique<synthesizer::TriangularGenerator>(GetBaseAmplitude(), GetBaseFrequency(), GenerateAmplitudeSignal(),
         GenerateFrequencySignal());
 }
 
@@ -148,7 +200,19 @@ auto WhiteNoiseGeneratorNodeView::GetInputViews() -> std::list<NodeInputView *> 
 
 auto WhiteNoiseGeneratorNodeView::CreateGenerator() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    return std::unique_ptr<synthesizer::SignalGenerator>();
+    return std::make_unique<synthesizer::WhiteNoiseGenerator>(
+        GetBaseAmplitude(), GenerateAmplitude()
+        );
+}
+
+auto WhiteNoiseGeneratorNodeView::GetBaseAmplitude() const -> float {
+    return base_amplitude_input_.GetValue();
+}
+
+auto WhiteNoiseGeneratorNodeView::GenerateAmplitude() const
+    -> std::unique_ptr<synthesizer::SignalGenerator> {
+    auto connected_node = amplitude_input_node_.GetConnectedSignalNode();
+    return connected_node != nullptr ? connected_node->CreateGenerator() : nullptr;
 }
 
 }  // namespace wave_generator::view::node

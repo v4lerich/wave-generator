@@ -8,7 +8,7 @@
 namespace wave_generator::synthesizer {
 
 AmplitudeFrequencyGenerator::AmplitudeFrequencyGenerator(
-    double base_frequency, double base_amplitude,
+    double base_amplitude, double base_frequency,
     std::unique_ptr<SignalGenerator> amplitude_signal,
     std::unique_ptr<SignalGenerator> frequency_signal)
     : base_amplitude_{base_amplitude}, base_frequency_{base_frequency} {

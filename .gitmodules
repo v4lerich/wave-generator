@@ -9,3 +9,9 @@
 [submodule "3rd_party/sdl2/SDL"]
 	path = 3rd_party/sdl2/SDL
 	url = https://github.com/SDL-mirror/SDL
+[submodule "3rd_party/icon_font_headers/IconFontCppHeaders"]
+	path = 3rd_party/icon_font_headers/IconFontCppHeaders
+	url = https://github.com/juliettef/IconFontCppHeaders
+[submodule "3rd_party/fork_awesome/Fork-Awesome"]
+	path = 3rd_party/fork_awesome/Fork-Awesome
+	url = https://github.com/ForkAwesome/Fork-Awesome

@@ -1,4 +1,4 @@
 project(wave-generator-resources)
 
-file(COPY ./Rubik_font
-    DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ./Rubik_font/Rubik-Medium.ttf
+    DESTINATION ${RESOURCE_PATH}/RubikFont/)

@@ -1,4 +1,4 @@
-project(glad2_loader)
+project(glad2-loader)
 
 if (TARGET ${PROJECT_NAME}) 
     return()

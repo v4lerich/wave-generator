@@ -2,6 +2,7 @@
 #define WAVEGENERATOR_NODE_VIEWS_H
 
 #include <signal_generator.h>
+#include <sound_device.h>
 
 #include <memory>
 
@@ -16,17 +17,27 @@ class SignalGeneratorNodeView : public NodeView {
     virtual auto CreateGenerator() const -> std::unique_ptr<synthesizer::SignalGenerator> = 0;
 };
 
-class SignalSinkNodeView final : public SignalGeneratorNodeView {
+class SignalSinkNodeView final : public NodeView {
   public:
-    explicit SignalSinkNodeView(ImVec2 position = {});
-    auto CreateGenerator() const -> std::unique_ptr<synthesizer::SignalGenerator> override;
+    using SignalGeneratorPtr = std::unique_ptr<synthesizer::SignalGenerator>;
+
+    explicit SignalSinkNodeView(model::SoundDevicePtr sound_device, ImVec2 position = {});
+    auto CreateGenerators() const -> std::vector<SignalGeneratorPtr>;
     auto IsDeletable() const -> bool override;
+    auto GetChannelsCount() -> size_t;
 
   protected:
+    void BeginRender() override;
+    void EndRender() override;
     auto GetInputViews() -> std::list<NodeInputView *> override;
 
   private:
-    SignalPortInputView input_node_;
+    void SetChannels(size_t channels_count);
+
+    model::SoundDevicePtr sound_device_;
+    SwitchInputView mode_input_;
+    std::vector<SignalPortInputView> channel_inputs_;
+    SignalPortInputView same_input_;
 };
 
 class AmplitudeFrequencyGeneratorNodeView : public SignalGeneratorNodeView {
@@ -104,6 +115,9 @@ class WhiteNoiseGeneratorNodeView final : public SignalGeneratorNodeView {
     auto CreateGenerator() const -> std::unique_ptr<synthesizer::SignalGenerator> override;
 
   private:
+    auto GetBaseAmplitude() const -> float;
+    auto GenerateAmplitude() const -> std::unique_ptr<synthesizer::SignalGenerator>;
+
     FloatInputView base_amplitude_input_;
     SignalPortInputView amplitude_input_node_;
     SignalPortOutputView output_node_;

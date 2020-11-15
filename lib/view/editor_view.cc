@@ -10,8 +10,8 @@ namespace wave_generator::view {
 const std::string kWindowName = "editor";
 const std::string kContextPopupName = "context_popup";
 
-EditorView::EditorView() {
-    sink_ = std::make_shared<node::SignalSinkNodeView>();
+EditorView::EditorView(model::SoundDevicePtr sound_device) {
+    sink_ = std::make_shared<node::SignalSinkNodeView>(sound_device);
     sink_->Move({300, 300});
     nodes_.push_back(sink_);
 
@@ -135,6 +135,10 @@ void EditorView::RenderPopup(ImVec2 offset) {
         }
     }
     ImGui::EndPopup();
+}
+
+auto EditorView::CreateGenerators() -> std::vector<SignalGeneratorPtr> {
+    return sink_->CreateGenerators();
 }
 
 }  // namespace wave_generator::view

@@ -24,4 +24,4 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC imgui .)
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE sdl2 glad2_loader)
+    PUBLIC sdl2 glad2-loader)
