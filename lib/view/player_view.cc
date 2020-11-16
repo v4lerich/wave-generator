@@ -16,9 +16,8 @@ static constexpr float kWindowPadding = 5.0;
 static const std::string kPlayButtonText = std::string(ICON_FK_PLAY) + " Play";
 static const std::string kPauseButtonText = std::string(ICON_FK_PAUSE) + " Pause";
 
-PlayerView::PlayerView(model::SoundDevicePtr sound_device, PlayerView::GeneratorsBuilderFunc generators_builder)
-: generators_builder_{std::move(generators_builder)},
-sound_device_{std::move(sound_device)} {
+PlayerView::PlayerView(model::SoundDevicePtr sound_device)
+: sound_device_{std::move(sound_device)} {
 }
 
 void PlayerView::Render() { RenderWindow(); }
@@ -35,15 +34,11 @@ void PlayerView::RenderWindow() {
         if (sound_device_->IsPlaying()) {
             sound_device_->Pause();
         } else {
-            auto generators = generators_builder_();
-            for (size_t i = 0; i < generators.size(); i++) {
-                sound_device_->SetGenerator(i, std::move(generators[i]));
-            }
             sound_device_->Play();
         }
     }
-    ImGui::SameLine();
-    ImGui::Text("Queue: %d", sound_device_->GetQueueSize());
+    //ImGui::SameLine();
+    //ImGui::Text("Queue: %d", sound_device_->GetQueueSize());
 
     ImGui::End();
     ImGui::PopStyleVar();

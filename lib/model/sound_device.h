@@ -4,7 +4,6 @@
 #include <SDL_audio.h>
 #include <signal_generator.h>
 
-#include "cached_signal_samples_generator.h"
 #include "signal_samples_generator.h"
 
 namespace wave_generator::model {
@@ -14,7 +13,7 @@ class SoundDevice {
     using SignalGeneratorPtr = std::shared_ptr<synthesizer::SignalGenerator>;
 
     struct Config {
-        CachedSignalSamplesGenerator::Config cacher_config;
+        SignalSamplesGenerator::Config generator_config;
         size_t samples;
     };
 
@@ -27,8 +26,6 @@ class SoundDevice {
     auto IsPlaying() const -> bool;
     void SetGenerator(size_t channel, SignalGeneratorPtr generator);
 
-    auto GetQueueSize() -> size_t;
-
     auto GetConfig() const -> const Config&;
     void UpdateConfig(Config config);
 
@@ -39,8 +36,7 @@ class SoundDevice {
 
     Config config_;
     SDL_AudioSpec audio_spec_{};
-    CachedSignalSamplesGenerator cacher_;
-    std::vector<float> buffer_{};
+    SignalSamplesGenerator generator_;
     bool is_playing_{};
 };
 

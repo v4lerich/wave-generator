@@ -21,23 +21,20 @@ class SignalSamplesGenerator {
 
     explicit SignalSamplesGenerator(Config config);
 
-    auto CanGenerate() const -> bool;
     void SetGenerator(size_t channel, SignalGeneratorPtr generator);
 
-    auto GenerateSamples(float* buffer, size_t samples_count) -> bool;
+    void GenerateSamples(float* buffer, size_t samples_count);
     void Reset();
 
     void UpdateConfig(Config config);
 
   private:
-    auto GenerateSample(float* buffer,
-                        double sample_step) const -> bool;
+    void GenerateSample(float* buffer, double sample_step) const;
 
     std::vector<SignalGeneratorPtr> generators_;
     Config config_;
 
     std::mutex mutex_{};
-    std::vector<float> samples_buffer_;
 };
 
 }

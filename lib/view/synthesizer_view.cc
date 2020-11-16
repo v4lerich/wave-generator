@@ -5,20 +5,18 @@
 namespace wave_generator::view {
 
 static const std::string kDockspaceName = "main_dockspace";
-static const model::SoundDevice::Config kSoundDeviceConfig = {.cacher_config = {
-    .samples_chunk_size = 4096,
-    .cache_samples_chunks = 100,
+static const model::SoundDevice::Config kSoundDeviceConfig = {
     .generator_config =
         {
             .frequency = 48000,
             .channels = 2,
         },
-}};
+};
 
 SynthesizerView::SynthesizerView()
     : sound_device_{std::make_shared<model::SoundDevice>(kSoundDeviceConfig)},
     editor_view_{sound_device_},
-    player_view_{sound_device_, std::bind(&SynthesizerView::CreateGenerators, this)}
+    player_view_{sound_device_}
 {}
 
 void SynthesizerView::Render() {
@@ -34,6 +32,13 @@ void SynthesizerView::Render() {
     ImGui::SetNextWindowClass(&window_class);
     player_view_.Render();
 
+    if (editor_view_.IsTopologyChanged()) {
+        auto generators = CreateGenerators();
+        for (size_t i = 0; i < generators.size(); i++) {
+            sound_device_->SetGenerator(i, std::move(generators[i]));
+        }
+    }
+
     EndDockingWindow();
 }
 
@@ -48,14 +53,12 @@ void SynthesizerView::BeginDockingWindow() {
                     ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
                     ImGuiWindowFlags_NoBackground;
 
-    bool show_dock_window = true;
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0F);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{});
 
     ImGui::Begin("DockSpace Demo", nullptr, window_flags);
     ImGui::PopStyleVar();
 
-    const ImGuiDockNodeFlags docking_flags = ImGuiDockNodeFlags_PassthruCentralNode;
     InitDockingLayout();
     ImGui::DockSpace(ImGui::GetID(kDockspaceName.c_str()), {0, 0});
 }

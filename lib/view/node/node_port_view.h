@@ -27,6 +27,7 @@ class NodeInputView {
     void Connect(NodeOutputView* output);
     void Disconnect();
 
+    auto IsTopologyChanged() const -> bool;
     auto GetConnectedNode() const -> const NodeView*;
     auto GetPortPosition() const -> ImVec2;
     auto GetPortSize() const -> ImVec2;
@@ -40,6 +41,7 @@ class NodeInputView {
 
     auto GetName() const -> const std::string&;
 
+    bool is_topology_changed_{};
   private:
     static auto GetID() -> int;
     static int counter_id_;
@@ -68,6 +70,7 @@ class NodeOutputView {
     auto GetPortSize() const -> ImVec2;
     auto GetPortRect() const -> ImRect;
 
+    auto IsTopologyChanged() const -> bool;
     void Connect(NodeInputView* input);
     void Disconnect(NodeInputView* input);
     void DisconnectAll();
@@ -83,6 +86,7 @@ class NodeOutputView {
     int background_channel_{};
 
     bool is_connecting_{};
+    bool is_topology_changed_{};
 };
 
 }  // namespace wave_generator::view::node

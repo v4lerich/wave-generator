@@ -37,6 +37,7 @@ NodeInputView::NodeInputView(const NodeView* parent, std::string name, bool has_
     : parent_{parent}, id_{GetID()}, name_{std::move(name)}, has_port_{has_port} {}
 
 void NodeInputView::Render(ImDrawList* draw_list) {
+    is_topology_changed_ = false;
     ImGui::PushID(id_);
 
     draw_list->ChannelsSetCurrent(foreground_channel_);
@@ -67,6 +68,7 @@ void NodeInputView::Connect(NodeOutputView* output) {
     if (connected_output_ == nullptr) {
         connected_output_ = output;
         output->Connect(this);
+        is_topology_changed_ = true;
     }
 }
 
@@ -80,6 +82,7 @@ void NodeInputView::Disconnect() {
     if (connected_output_ != nullptr) {
         connected_output_->Disconnect(this);
         connected_output_ = nullptr;
+        is_topology_changed_ = true;
     }
 }
 
@@ -105,10 +108,13 @@ void NodeInputView::SetChannels(int foreground_channel, int background_channel) 
     background_channel_ = background_channel;
 }
 
+auto NodeInputView::IsTopologyChanged() const -> bool { return is_topology_changed_; }
+
 NodeOutputView::NodeOutputView(const NodeView* parent, std::string name)
     : parent_{parent}, name_{std::move(name)} {}
 
 void NodeOutputView::Render(ImDrawList* draw_list) {
+    is_topology_changed_ = false;
     draw_list->ChannelsSetCurrent(foreground_channel_);
 
     ImGui::BeginGroup();
@@ -143,6 +149,7 @@ void NodeOutputView::Connect(NodeInputView* input) {
     if (connected_inputs_.find(input) == std::end(connected_inputs_)) {
         connected_inputs_.insert(input);
         input->Connect(this);
+        is_topology_changed_ = true;
     }
 }
 
@@ -150,6 +157,7 @@ void NodeOutputView::Disconnect(NodeInputView* input) {
     if (auto it = connected_inputs_.find(input); it != std::end(connected_inputs_)) {
         connected_inputs_.erase(it);
         input->Disconnect();
+        is_topology_changed_ = true;
     }
 }
 
@@ -165,5 +173,7 @@ void NodeOutputView::SetChannels(int foreground_channel, int background_channel)
     foreground_channel_ = foreground_channel;
     background_channel_ = background_channel;
 }
+
+auto NodeOutputView::IsTopologyChanged() const -> bool { return is_topology_changed_; }
 
 }  // namespace wave_generator::view::node

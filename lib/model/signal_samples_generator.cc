@@ -9,43 +9,29 @@ SignalSamplesGenerator::SignalSamplesGenerator(Config config)
     : generators_(config.channels), config_{config}
 {}
 
-auto SignalSamplesGenerator::GenerateSamples(float* buffer, size_t samples_count) -> bool {
+void SignalSamplesGenerator::GenerateSamples(float* buffer, size_t samples_count) {
     std::unique_lock<std::mutex> lock{mutex_};
 
     auto sample_step = 1.0 / config_.frequency;
 
     for (auto i = 0; i < (samples_count / config_.channels); i++) {
-        if (!GenerateSample(buffer, sample_step)) { return false; }
+        GenerateSample(buffer, sample_step);
         std::advance(buffer, config_.channels);
     }
-    return true;
 }
 
-auto SignalSamplesGenerator::GenerateSample(float* buffer,
-                                            double sample_step) const -> bool {
+void SignalSamplesGenerator::GenerateSample(float* buffer,
+                                            double sample_step) const {
     for (auto& generator : generators_) {
-        if (generator) {
-            *buffer = float(generator->SampleAfter(sample_step));
-        } else {
-            return false;
-        }
+        auto loaded_generator = std::atomic_load(&generator);
+        *buffer = loaded_generator ? float(loaded_generator->SampleAfter(sample_step)) : 0;
         std::advance(buffer, 1);
     }
-    return true;
 }
 
 void SignalSamplesGenerator::SetGenerator(size_t channel, SignalGeneratorPtr generator) {
-    std::atomic_store(&generators_[channel], std::move(generator));
-}
-
-auto SignalSamplesGenerator::CanGenerate() const -> bool {
-    for (size_t i = 0; i < config_.channels; i++) {
-        auto generator = std::atomic_load(&generators_[i]);
-        if (!generator) {
-            return false;
-        }
-    }
-    return true;
+    auto& target_generator = generators_[channel];
+    std::atomic_store(&target_generator, std::move(generator));
 }
 
 void SignalSamplesGenerator::Reset() {

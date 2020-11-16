@@ -38,7 +38,10 @@ EditorView::EditorView(model::SoundDevicePtr sound_device) {
     });
 }
 
-void EditorView::Render() { RenderWindow(); }
+void EditorView::Render() {
+    is_topology_changed_ = false;
+    RenderWindow();
+}
 
 const std::string& EditorView::WindowName() { return kWindowName; }
 
@@ -85,8 +88,13 @@ void EditorView::RenderWindow() {
                 auto found_input = (*found_node)->GetInput(mouse_position);
                 if (found_input->CanConnect(output)) {
                     found_input->Connect(output);
+                    is_topology_changed_ = true;
                 }
             }
+        }
+
+        if (node->IsTopologyChanged()) {
+            is_topology_changed_ = true;
         }
     }
     draw_list->ChannelsMerge();
@@ -121,6 +129,7 @@ void EditorView::RenderPopup(ImVec2 offset) {
             (*found_node)->Disconnect();
             nodes_.erase(found_node);
             ImGui::CloseCurrentPopup();
+            is_topology_changed_ = true;
         }
     } else {
         if (ImGui::BeginMenu("Add")) {
@@ -129,6 +138,7 @@ void EditorView::RenderPopup(ImVec2 offset) {
                     auto node = factory.Construct(position);
                     nodes_.push_front(node);
                     ImGui::CloseCurrentPopup();
+                    is_topology_changed_ = true;
                 }
             }
             ImGui::EndMenu();
@@ -139,6 +149,10 @@ void EditorView::RenderPopup(ImVec2 offset) {
 
 auto EditorView::CreateGenerators() -> std::vector<SignalGeneratorPtr> {
     return sink_->CreateGenerators();
+}
+
+auto EditorView::IsTopologyChanged() -> bool {
+    return is_topology_changed_;
 }
 
 }  // namespace wave_generator::view
