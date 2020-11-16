@@ -156,4 +156,18 @@ void NodeView::BeginRender() {}
 
 void NodeView::EndRender() {}
 
+auto NodeView::IsTopologyChanged() -> bool {
+    auto inputs = GetInputViews();
+    auto is_input_changed = std::any_of(std::begin(inputs), std::end(inputs), [] (const auto& input) {
+        return input->IsTopologyChanged();
+    });
+
+    auto outputs = GetOutputViews();
+    auto is_output_changed = std::any_of(std::begin(outputs), std::end(outputs), [] (const auto& output) {
+      return output->IsTopologyChanged();
+    });
+
+    return is_input_changed || is_output_changed;
+}
+
 }  // namespace wave_generator::view::node

@@ -25,6 +25,7 @@ class NodeView {
     auto IsContextOpen() const -> bool;
     virtual auto IsDeletable() const -> bool;
 
+    auto IsTopologyChanged() -> bool;
     auto IsConnecting() -> bool;
     void Disconnect();
     auto GetConnectingOutput() -> NodeOutputView *;

@@ -34,7 +34,9 @@ void FloatInputView::RenderItem(ImDrawList* draw_list) {
     if (type_ == Type::Logarithmic) {
         flags |= ImGuiSliderFlags_Logarithmic;
     }
-    ImGui::SliderFloat("", &value_, range_[0], range_[1], (GetName() + ": %.3f").c_str(), flags);
+    if (ImGui::SliderFloat("", &value_, range_[0], range_[1], (GetName() + ": %.3f").c_str(), flags)) {
+        is_topology_changed_ = true;
+    }
 }
 
 SwitchInputView::SwitchInputView(const NodeView* parent, std::string name,
@@ -59,6 +61,7 @@ void SwitchInputView::RenderItem(ImDrawList* draw_list) {
         ImGui::EndCombo();
     }
     ImGui::EndGroup();
+    is_topology_changed_ = has_changed_;
 }
 
 bool SwitchInputView::HasChanged() { return has_changed_; }

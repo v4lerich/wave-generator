@@ -21,7 +21,7 @@ class AmplitudeFrequencyGenerator : public SignalGenerator {
     virtual auto Evaluate(double phase) -> double = 0;
 
   private:
-    std::unique_ptr<SignalGenerator> accumulated_phase_;
+    std::unique_ptr<SignalGenerator> accumulated_position_shift_;
 
     double base_amplitude_;
     double base_frequency_;

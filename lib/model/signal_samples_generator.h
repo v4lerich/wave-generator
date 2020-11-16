@@ -35,7 +35,6 @@ class SignalSamplesGenerator {
     Config config_;
 
     std::mutex mutex_{};
-    std::vector<float> samples_buffer_;
 };
 
 }

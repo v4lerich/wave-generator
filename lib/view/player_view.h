@@ -14,9 +14,8 @@ namespace wave_generator::view {
 class PlayerView : public View {
   public:
     using SignalGeneratorPtr = std::unique_ptr<synthesizer::SignalGenerator>;
-    using GeneratorsBuilderFunc = std::function<std::vector<SignalGeneratorPtr> ()>;
 
-    explicit PlayerView(model::SoundDevicePtr sound_device, GeneratorsBuilderFunc generators_builder);
+    explicit PlayerView(model::SoundDevicePtr sound_device);
 
     void Render() override;
     auto WindowName() -> const std::string&;
@@ -24,7 +23,6 @@ class PlayerView : public View {
   private:
     void RenderWindow();
 
-    GeneratorsBuilderFunc generators_builder_;
     std::shared_ptr<model::SoundDevice> sound_device_;
 };
 

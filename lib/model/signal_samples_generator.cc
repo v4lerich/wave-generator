@@ -23,13 +23,15 @@ void SignalSamplesGenerator::GenerateSamples(float* buffer, size_t samples_count
 void SignalSamplesGenerator::GenerateSample(float* buffer,
                                             double sample_step) const {
     for (auto& generator : generators_) {
-        *buffer = generator ? float(generator->SampleAfter(sample_step)) : 0;
+        auto loaded_generator = std::atomic_load(&generator);
+        *buffer = loaded_generator ? float(loaded_generator->SampleAfter(sample_step)) : 0;
         std::advance(buffer, 1);
     }
 }
 
 void SignalSamplesGenerator::SetGenerator(size_t channel, SignalGeneratorPtr generator) {
-    std::atomic_store(&generators_[channel], std::move(generator));
+    auto& target_generator = generators_[channel];
+    std::atomic_store(&target_generator, std::move(generator));
 }
 
 void SignalSamplesGenerator::Reset() {

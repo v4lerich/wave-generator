@@ -11,8 +11,8 @@ void Integrator::Reset() {
 }
 
 auto Integrator::SampleAfter(double step) -> double {
-    integration_value_ += signal_->SampleAfter(step) * step;
     SignalGenerator::MovePosition(step);
+    integration_value_ += signal_->SampleAfter(step) * step;
     return integration_value_;
 }
 

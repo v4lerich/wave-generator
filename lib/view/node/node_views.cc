@@ -75,7 +75,7 @@ void SignalSinkNodeView::EndRender() {
 }
 
 void SignalSinkNodeView::BeginRender() {
-    SetChannels(sound_device_->GetConfig().cacher_config.generator_config.channels);
+    SetChannels(sound_device_->GetConfig().generator_config.channels);
 }
 
 AmplitudeFrequencyGeneratorNodeView::AmplitudeFrequencyGeneratorNodeView(std::string name,

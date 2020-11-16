@@ -13,10 +13,10 @@ AmplitudeFrequencyGenerator::AmplitudeFrequencyGenerator(
     std::unique_ptr<SignalGenerator> frequency_signal)
     : base_amplitude_{base_amplitude}, base_frequency_{base_frequency} {
     if (frequency_signal) {
-        accumulated_phase_ =
+        accumulated_position_shift_ =
             std::make_unique<Integrator>(std::move(frequency_signal));
     } else {
-        accumulated_phase_ = std::make_unique<ConstantGenerator>(0);
+        accumulated_position_shift_ = std::make_unique<ConstantGenerator>(0);
     }
 
     if (amplitude_signal) {
@@ -28,9 +28,9 @@ AmplitudeFrequencyGenerator::AmplitudeFrequencyGenerator(
 
 auto AmplitudeFrequencyGenerator::SampleAfter(double step) -> double {
     double position = SignalGenerator::SampleAfter(step);
-    double accumulated_phase = accumulated_phase_->SampleAfter(step);
+    double accumulated_position_shift = accumulated_position_shift_->SampleAfter(step);
 
-    double phase = accumulated_phase + base_frequency_ * position;
+    double phase = base_frequency_ * (accumulated_position_shift + position);
 
     double amplitude_shift = amplitude_->SampleAfter(step);
     double value = base_amplitude_ * (1 + amplitude_shift) * Evaluate(phase);
@@ -40,7 +40,7 @@ auto AmplitudeFrequencyGenerator::SampleAfter(double step) -> double {
 void AmplitudeFrequencyGenerator::Reset() {
     SignalGenerator::Reset();
     if (amplitude_) amplitude_->Reset();
-    if (accumulated_phase_) accumulated_phase_->Reset();
+    if (accumulated_position_shift_) accumulated_position_shift_->Reset();
 }
 
 }  // namespace wave_generator::synthesizer

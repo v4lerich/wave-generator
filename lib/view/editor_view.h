@@ -24,6 +24,8 @@ class EditorView : public View {
     auto WindowName() -> const std::string&;
     auto CreateGenerators() -> std::vector<SignalGeneratorPtr>;
 
+    bool IsTopologyChanged();
+
   private:
     void RenderWindow();
     void RenderPopup(ImVec2 offset);
@@ -33,6 +35,7 @@ class EditorView : public View {
     std::shared_ptr<node::SignalSinkNodeView> sink_;
 
     ImVec2 scrolling_offset_{};
+    bool is_topology_changed_{};
 };
 
 };  // namespace wave_generator::view
