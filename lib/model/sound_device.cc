@@ -59,7 +59,7 @@ void SoundDevice::GenerateSamples(void* device_pointer, uint8_t* stream, int len
 }
 
 void SoundDevice::GenerateSamples(uint8_t* stream, size_t length) {
-    cacher_.GenerateSamples(reinterpret_cast<float*>(stream), length / 4);
+    cacher_.GenerateSamples(reinterpret_cast<float*>(stream), length / sizeof(float));
 }
 
 void SoundDevice::Reset() {

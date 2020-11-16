@@ -154,7 +154,8 @@ PulseGeneratorNodeView::PulseGeneratorNodeView(ImVec2 position)
 
 auto PulseGeneratorNodeView::CreateGenerator() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    return std::make_unique<synthesizer::SineGenerator>(GetBaseAmplitude(), GetBaseFrequency(),
+    return std::make_unique<synthesizer::PulseGenerator>(GetDutyCycle(),
+                                                        GetBaseAmplitude(), GetBaseFrequency(),
                                                         GenerateAmplitudeSignal(),
                                                         GenerateFrequencySignal());
 }
@@ -164,6 +165,8 @@ auto PulseGeneratorNodeView::GetInputViews() -> std::list<NodeInputView *> {
     inputs.push_front(&duty_cycle_input_);
     return inputs;
 }
+
+auto PulseGeneratorNodeView::GetDutyCycle() const -> float { return duty_cycle_input_.GetValue(); }
 
 SawtoothGeneratorNodeView::SawtoothGeneratorNodeView(ImVec2 position)
     : AmplitudeFrequencyGeneratorNodeView{"Sawtooth", position} {}

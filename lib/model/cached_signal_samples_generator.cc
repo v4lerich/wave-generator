@@ -17,10 +17,10 @@ auto CachedSignalSamplesGenerator::UnCacheChunks(size_t count) -> SamplesChunkCo
     {
         std::unique_lock<std::mutex> lock(cache_mutex_);
         is_cache_not_empty_.wait(lock, [&] () {
-            return cache_chunk_count_ >= count || is_shutdown_;
+            return cache_chunk_count_ >= count || is_shutdown_ || !is_caching_;
         });
 
-        if (is_shutdown_) {
+        if (is_shutdown_ || !is_caching_) {
             return chunk_entries;
         }
 
@@ -41,10 +41,10 @@ void CachedSignalSamplesGenerator::CacheChunk(SamplesChunk chunk) {
     {
         std::unique_lock<std::mutex> lock(cache_mutex_);
         is_cache_not_full_.wait(lock, [&] () {
-            return (cache_chunk_count_ < config_.cache_samples_chunks) || is_shutdown_;
+            return (cache_chunk_count_ < config_.cache_samples_chunks) || is_shutdown_ || !is_caching_;
         });
 
-        if (is_shutdown_) {
+        if (is_shutdown_ || !is_caching_) {
             return;
         }
 
@@ -76,11 +76,18 @@ void CachedSignalSamplesGenerator::Shutdown() {
 
 void CachedSignalSamplesGenerator::Stop() {
     is_caching_ = false;
+
+    is_caching_cond_.notify_all();
+    is_cache_not_full_.notify_all();
+    is_cache_not_empty_.notify_all();
 }
 
 void CachedSignalSamplesGenerator::Start() {
     is_caching_ = true;
+
     is_caching_cond_.notify_all();
+    is_cache_not_empty_.notify_all();
+    is_cache_not_full_.notify_all();
 }
 
 void CachedSignalSamplesGenerator::Reset() {

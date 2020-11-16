@@ -90,6 +90,7 @@ class PulseGeneratorNodeView final : public AmplitudeFrequencyGeneratorNodeView 
     auto GetInputViews() -> std::list<NodeInputView *> override;
 
   private:
+    auto GetDutyCycle() const -> float;
     FloatInputView duty_cycle_input_;
 };
 
