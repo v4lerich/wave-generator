@@ -19,7 +19,7 @@ class SynthesizerView : public View {
     void Render() override;
 
   private:
-    void BeginDockingWindow();
+    auto BeginDockingWindow() -> bool;
     void InitDockingLayout();
     void EndDockingWindow();
 

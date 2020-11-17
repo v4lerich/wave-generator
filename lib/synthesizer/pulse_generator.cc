@@ -7,12 +7,10 @@
 
 namespace wave_generator::synthesizer {
 
-PulseGenerator::PulseGenerator(
-    double duty_cycle, double base_amplitude, double base_frequency,
-    std::unique_ptr<SignalGenerator> amplitude_signal,
-    std::unique_ptr<SignalGenerator> frequency_signal)
-    : AmplitudeFrequencyGenerator(base_amplitude, base_frequency,
-                                  std::move(amplitude_signal),
+PulseGenerator::PulseGenerator(double duty_cycle, double base_amplitude, double base_frequency,
+                               std::unique_ptr<SignalGenerator> amplitude_signal,
+                               std::unique_ptr<SignalGenerator> frequency_signal)
+    : AmplitudeFrequencyGenerator(base_amplitude, base_frequency, std::move(amplitude_signal),
                                   std::move(frequency_signal)),
       duty_cycle_{duty_cycle} {}
 

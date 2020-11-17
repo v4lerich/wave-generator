@@ -6,8 +6,7 @@
 namespace wave_generator::model {
 
 SignalSamplesGenerator::SignalSamplesGenerator(Config config)
-    : generators_(config.channels), config_{config}
-{}
+    : generators_(config.channels), config_{config} {}
 
 void SignalSamplesGenerator::GenerateSamples(float* buffer, size_t samples_count) {
     std::unique_lock<std::mutex> lock{mutex_};
@@ -20,8 +19,7 @@ void SignalSamplesGenerator::GenerateSamples(float* buffer, size_t samples_count
     }
 }
 
-void SignalSamplesGenerator::GenerateSample(float* buffer,
-                                            double sample_step) const {
+void SignalSamplesGenerator::GenerateSample(float* buffer, double sample_step) const {
     for (auto& generator : generators_) {
         auto loaded_generator = std::atomic_load(&generator);
         *buffer = loaded_generator ? float(loaded_generator->SampleAfter(sample_step)) : 0;
@@ -50,4 +48,4 @@ void SignalSamplesGenerator::UpdateConfig(Config config) {
     config_ = config;
 }
 
-}
+}  // namespace wave_generator::model

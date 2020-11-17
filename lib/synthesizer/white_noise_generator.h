@@ -10,9 +10,7 @@ namespace wave_generator::synthesizer {
 
 class WhiteNoiseGenerator : public SignalGenerator {
   public:
-    WhiteNoiseGenerator(
-        double base_amplitude,
-        std::unique_ptr<SignalGenerator> amplitude_signal);
+    WhiteNoiseGenerator(double base_amplitude, std::unique_ptr<SignalGenerator> amplitude_signal);
 
     auto SampleAfter(double step) -> double override;
     void Reset() override;

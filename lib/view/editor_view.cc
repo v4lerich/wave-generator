@@ -36,6 +36,9 @@ EditorView::EditorView(model::SoundDevicePtr sound_device) {
     factory_storage_.RegisterFactory("White noise", [](ImVec2 position) {
         return std::make_shared<node::WhiteNoiseGeneratorNodeView>(position);
     });
+    factory_storage_.RegisterFactory("Mixer", [](ImVec2 position) {
+        return std::make_shared<node::MixerGeneratorNodeView>(position);
+    });
 }
 
 void EditorView::Render() {
@@ -108,8 +111,6 @@ void EditorView::RenderWindow() {
 
     if (ImGui::IsWindowHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
         scrolling_offset_ += ImGui::GetIO().MouseDelta;
-        scrolling_offset_.x = std::max(scrolling_offset_.x, 0.0F);
-        scrolling_offset_.y = std::max(scrolling_offset_.y, 0.0F);
     }
     ImGui::End();
 }
@@ -151,8 +152,6 @@ auto EditorView::CreateGenerators() -> std::vector<SignalGeneratorPtr> {
     return sink_->CreateGenerators();
 }
 
-auto EditorView::IsTopologyChanged() -> bool {
-    return is_topology_changed_;
-}
+auto EditorView::IsTopologyChanged() -> bool { return is_topology_changed_; }
 
 }  // namespace wave_generator::view

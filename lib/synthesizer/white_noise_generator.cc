@@ -7,8 +7,8 @@
 
 namespace wave_generator::synthesizer {
 
-WhiteNoiseGenerator::WhiteNoiseGenerator(
-    double base_amplitude, std::unique_ptr<SignalGenerator> amplitude_signal)
+WhiteNoiseGenerator::WhiteNoiseGenerator(double base_amplitude,
+                                         std::unique_ptr<SignalGenerator> amplitude_signal)
     : base_amplitude_{base_amplitude} {
     std::random_device random_device;
     generator_ = std::mt19937{random_device()};
@@ -24,8 +24,7 @@ WhiteNoiseGenerator::WhiteNoiseGenerator(
 auto WhiteNoiseGenerator::SampleAfter(double step) -> double {
     SignalGenerator::SampleAfter(step);
     double amplitude_shift = amplitude_->SampleAfter(step);
-    double value =
-        base_amplitude_ * (1 + amplitude_shift) * distribution_(generator_);
+    double value = base_amplitude_ * (1 + amplitude_shift) * distribution_(generator_);
     return value;
 }
 

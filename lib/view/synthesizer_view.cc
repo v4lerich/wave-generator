@@ -15,12 +15,11 @@ static const model::SoundDevice::Config kSoundDeviceConfig = {
 
 SynthesizerView::SynthesizerView()
     : sound_device_{std::make_shared<model::SoundDevice>(kSoundDeviceConfig)},
-    editor_view_{sound_device_},
-    player_view_{sound_device_}
-{}
+      editor_view_{sound_device_},
+      player_view_{sound_device_} {}
 
 void SynthesizerView::Render() {
-    BeginDockingWindow();
+    if (!BeginDockingWindow()) return;
     RenderMenuBar();
 
     ImGuiWindowClass window_class;
@@ -42,7 +41,7 @@ void SynthesizerView::Render() {
     EndDockingWindow();
 }
 
-void SynthesizerView::BeginDockingWindow() {
+auto SynthesizerView::BeginDockingWindow() -> bool {
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->GetWorkPos());
     ImGui::SetNextWindowSize(viewport->GetWorkSize());
@@ -56,11 +55,15 @@ void SynthesizerView::BeginDockingWindow() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0F);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{});
 
-    ImGui::Begin("DockSpace Demo", nullptr, window_flags);
-    ImGui::PopStyleVar();
+    if (ImGui::Begin("DockSpace Demo", nullptr, window_flags)) {
+        ImGui::PopStyleVar();
 
-    InitDockingLayout();
-    ImGui::DockSpace(ImGui::GetID(kDockspaceName.c_str()), {0, 0});
+        InitDockingLayout();
+        ImGui::DockSpace(ImGui::GetID(kDockspaceName.c_str()), {0, 0});
+        return true;
+    }
+    ImGui::PopStyleVar();
+    return false;
 }
 
 void SynthesizerView::InitDockingLayout() {

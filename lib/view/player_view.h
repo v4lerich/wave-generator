@@ -3,8 +3,8 @@
 
 #include <sound_device.h>
 
-#include <memory>
 #include <functional>
+#include <memory>
 #include <string>
 
 #include "view.h"
