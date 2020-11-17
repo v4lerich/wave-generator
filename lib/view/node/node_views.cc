@@ -14,6 +14,8 @@
 
 namespace wave_generator::view::node {
 
+constexpr float kEpsilon = 1e-5;
+
 SignalGeneratorNodeView::SignalGeneratorNodeView(std::string name, ImVec2 position)
     : NodeView{std::move(name), position} {}
 
@@ -262,5 +264,21 @@ void MixerGeneratorNodeView::Refresh() {
 auto MixerGeneratorNodeView::GetInputCounts() -> int { return input_counts_.GetValue(); }
 
 void MixerGeneratorNodeView::EndRender() { Refresh(); }
+
+void MixerGeneratorNodeView::BeginRender() {
+    double coefficient_sum = 0;
+    for (auto& input : inputs_) {
+        coefficient_sum += input.coefficient_node.GetValue();
+    }
+    if (std::abs(coefficient_sum) < kEpsilon) {
+        for (auto& input : inputs_) {
+            input.coefficient_node.SetValue(1.0 / inputs_.size());
+        }
+    } else {
+        for (auto& input : inputs_) {
+            input.coefficient_node.SetValue(input.coefficient_node.GetValue() / coefficient_sum);
+        }
+    }
+}
 
 }  // namespace wave_generator::view::node

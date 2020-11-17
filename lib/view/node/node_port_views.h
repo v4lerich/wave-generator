@@ -31,6 +31,7 @@ class FloatInputView final : public NodeInputView {
     explicit FloatInputView(const NodeView* parent, std::string name, ImVec2 range = {0.0F, 1.0F},
                             float default_value = 1.0F, Type type = Type::Linear);
     auto GetValue() const -> float;
+    void SetValue(float value);
 
   protected:
     void RenderItem(ImDrawList* draw_list) override;

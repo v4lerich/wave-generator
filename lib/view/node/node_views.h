@@ -129,6 +129,7 @@ class MixerGeneratorNodeView final : public SignalGeneratorNodeView {
     explicit MixerGeneratorNodeView(ImVec2 position = {});
 
   protected:
+    void BeginRender() override;
     void EndRender() override;
     auto GetOutputViews() -> std::list<NodeOutputView *> override;
     auto GetInputViews() -> std::list<NodeInputView *> override;

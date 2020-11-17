@@ -50,6 +50,8 @@ void FloatInputView::RenderItem(ImDrawList* draw_list) {
     value_ = std::clamp(value_, range_[0], range_[1]);
 }
 
+void FloatInputView::SetValue(float value) { value_ = value; }
+
 IntInputView::IntInputView(const NodeView* parent, std::string name, IntInputView::Range range,
                            int default_value)
                            : NodeInputView{parent, std::move(name), false}, range_{range}, value_{default_value} {}
