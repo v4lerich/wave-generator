@@ -9,10 +9,9 @@ namespace wave_generator::synthesizer {
 
 class AmplitudeFrequencyGenerator : public SignalGenerator {
   public:
-    AmplitudeFrequencyGenerator(
-        double base_amplitude, double base_frequency,
-        std::unique_ptr<SignalGenerator> amplitude_signal,
-        std::unique_ptr<SignalGenerator> frequency_signal);
+    AmplitudeFrequencyGenerator(double base_amplitude, double base_frequency,
+                                std::unique_ptr<SignalGenerator> amplitude_signal,
+                                std::unique_ptr<SignalGenerator> frequency_signal);
 
     auto SampleAfter(double step) -> double override;
     void Reset() override;

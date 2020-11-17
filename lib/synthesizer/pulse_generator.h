@@ -9,11 +9,9 @@ namespace wave_generator::synthesizer {
 
 class PulseGenerator : public AmplitudeFrequencyGenerator {
   public:
-    PulseGenerator(
-        double duty_cycle,
-        double base_amplitude, double base_frequency,
-        std::unique_ptr<SignalGenerator> amplitude_signal,
-        std::unique_ptr<SignalGenerator> frequency_signal);
+    PulseGenerator(double duty_cycle, double base_amplitude, double base_frequency,
+                   std::unique_ptr<SignalGenerator> amplitude_signal,
+                   std::unique_ptr<SignalGenerator> frequency_signal);
 
   protected:
     double Evaluate(double phase) override;

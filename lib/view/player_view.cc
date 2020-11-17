@@ -17,8 +17,7 @@ static const std::string kPlayButtonText = std::string(ICON_FK_PLAY) + " Play";
 static const std::string kPauseButtonText = std::string(ICON_FK_PAUSE) + " Pause";
 
 PlayerView::PlayerView(model::SoundDevicePtr sound_device)
-: sound_device_{std::move(sound_device)} {
-}
+    : sound_device_{std::move(sound_device)} {}
 
 void PlayerView::Render() { RenderWindow(); }
 
@@ -27,20 +26,17 @@ auto PlayerView::WindowName() -> const std::string& { return kWindowName; }
 void PlayerView::RenderWindow() {
     auto window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar;
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {kWindowPadding, kWindowPadding});
-    ImGui::Begin(kWindowName.c_str(), nullptr, window_flags);
-
-    auto button_label = sound_device_->IsPlaying() ? kPauseButtonText : kPlayButtonText;
-    if (ImGui::Button(button_label.c_str())) {
-        if (sound_device_->IsPlaying()) {
-            sound_device_->Pause();
-        } else {
-            sound_device_->Play();
+    if (ImGui::Begin(kWindowName.c_str(), nullptr, window_flags)) {
+        auto button_label = sound_device_->IsPlaying() ? kPauseButtonText : kPlayButtonText;
+        if (ImGui::Button(button_label.c_str())) {
+            if (sound_device_->IsPlaying()) {
+                sound_device_->Pause();
+            } else {
+                sound_device_->Play();
+            }
         }
+        ImGui::End();
     }
-    //ImGui::SameLine();
-    //ImGui::Text("Queue: %d", sound_device_->GetQueueSize());
-
-    ImGui::End();
     ImGui::PopStyleVar();
 }
 

@@ -1,9 +1,9 @@
 #include "node_port_views.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "node_views.h"
-#include <algorithm>
 
 namespace wave_generator::view::node {
 
@@ -41,7 +41,8 @@ void FloatInputView::RenderItem(ImDrawList* draw_list) {
     if (type_ == Type::Logarithmic) {
         flags |= ImGuiSliderFlags_Logarithmic;
     }
-    if (ImGui::SliderFloat("##slider", &value_, range_[0], range_[1], (GetName() + ": %.3f").c_str(), flags)) {
+    if (ImGui::SliderFloat("##slider", &value_, range_[0], range_[1],
+                           (GetName() + ": %.3f").c_str(), flags)) {
         is_topology_changed_ = true;
     }
     if (ImGui::InputFloat("##input", &value_, 0.1, 1.0)) {
@@ -54,12 +55,13 @@ void FloatInputView::SetValue(float value) { value_ = value; }
 
 IntInputView::IntInputView(const NodeView* parent, std::string name, IntInputView::Range range,
                            int default_value)
-                           : NodeInputView{parent, std::move(name), false}, range_{range}, value_{default_value} {}
+    : NodeInputView{parent, std::move(name), false}, range_{range}, value_{default_value} {}
 
 auto IntInputView::GetValue() const -> int { return value_; }
 
 void IntInputView::RenderItem(ImDrawList* draw_list) {
-    if (ImGui::SliderInt("##slider", &value_, range_.first, range_.second, (GetName() + ": %.3f").c_str())) {
+    if (ImGui::SliderInt("##slider", &value_, range_.first, range_.second,
+                         (GetName() + ": %.3f").c_str())) {
         is_topology_changed_ = true;
     }
     if (ImGui::InputInt("##input", &value_, 1, 100)) {

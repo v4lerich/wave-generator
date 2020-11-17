@@ -7,12 +7,11 @@
 
 namespace wave_generator::synthesizer {
 
-TriangularGenerator::TriangularGenerator(
-    double base_amplitude, double base_frequency,
-    std::unique_ptr<SignalGenerator> amplitude,
-    std::unique_ptr<SignalGenerator> frequency)
-    : AmplitudeFrequencyGenerator(base_amplitude, base_frequency,
-                                  std::move(amplitude), std::move(frequency)) {}
+TriangularGenerator::TriangularGenerator(double base_amplitude, double base_frequency,
+                                         std::unique_ptr<SignalGenerator> amplitude,
+                                         std::unique_ptr<SignalGenerator> frequency)
+    : AmplitudeFrequencyGenerator(base_amplitude, base_frequency, std::move(amplitude),
+                                  std::move(frequency)) {}
 
 auto TriangularGenerator::Evaluate(double phase) -> double {
     return 2 * M_PI * asin(sin(2 * M_PI * phase));

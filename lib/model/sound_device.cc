@@ -6,9 +6,7 @@
 
 namespace wave_generator::model {
 
-SoundDevice::SoundDevice(Config config)
-    : config_{config}, generator_{config.generator_config} {
-
+SoundDevice::SoundDevice(Config config) : config_{config}, generator_{config.generator_config} {
     audio_spec_.freq = config_.generator_config.frequency;
     audio_spec_.callback = GenerateSamples;
     audio_spec_.channels = config_.generator_config.channels;
@@ -29,9 +27,7 @@ SoundDevice::SoundDevice(Config config)
     Reset();
 }
 
-SoundDevice::~SoundDevice() {
-    SDL_CloseAudio();
-}
+SoundDevice::~SoundDevice() { SDL_CloseAudio(); }
 
 void SoundDevice::SetGenerator(size_t channel, SignalGeneratorPtr generator) {
     generator_.SetGenerator(channel, std::move(generator));
@@ -50,7 +46,7 @@ void SoundDevice::Pause() {
 }
 
 void SoundDevice::GenerateSamples(void* device_pointer, uint8_t* stream, int length) {
-    auto device = static_cast<SoundDevice *>(device_pointer);
+    auto device = static_cast<SoundDevice*>(device_pointer);
     device->GenerateSamples(stream, length);
 }
 
@@ -70,8 +66,6 @@ void SoundDevice::UpdateConfig(SoundDevice::Config config) {
     SDL_UnlockAudio();
 }
 
-auto SoundDevice::GetConfig() const -> const Config& {
-    return config_;
-}
+auto SoundDevice::GetConfig() const -> const Config& { return config_; }
 
-}
+}  // namespace wave_generator::model

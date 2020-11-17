@@ -42,6 +42,6 @@ class SoundDevice {
 
 using SoundDevicePtr = std::shared_ptr<SoundDevice>;
 
-}
+}  // namespace wave_generator::model
 
 #endif  // WAVEGENERATOR_SOUND_DEVICE_H

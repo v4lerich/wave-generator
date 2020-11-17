@@ -1,8 +1,9 @@
 #ifndef WAVEGENERATOR_MIXER_GENERATOR_H
 #define WAVEGENERATOR_MIXER_GENERATOR_H
 
-#include "signal_generator.h"
 #include <memory>
+
+#include "signal_generator.h"
 
 namespace wave_generator::synthesizer {
 
@@ -25,6 +26,6 @@ class MixerGenerator final : public SignalGenerator {
     float coefficients_sum_;
 };
 
-}
+}  // namespace wave_generator::synthesizer
 
 #endif  // WAVEGENERATOR_MIXER_GENERATOR_H

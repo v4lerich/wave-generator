@@ -8,9 +8,10 @@ namespace wave_generator::synthesizer {
 
 MixerGenerator::MixerGenerator(std::vector<MixerInputSignal> input_signals)
     : input_signals_{std::move(input_signals)} {
-    coefficients_sum_ = std::accumulate(std::begin(input_signals_), std::end(input_signals_), 0.0F, [] (const auto& accumulator, const auto& mixer_input) {
-            return accumulator + mixer_input.coefficient;
-        });
+    coefficients_sum_ = std::accumulate(std::begin(input_signals_), std::end(input_signals_), 0.0F,
+                                        [](const auto& accumulator, const auto& mixer_input) {
+                                            return accumulator + mixer_input.coefficient;
+                                        });
 }
 
 auto MixerGenerator::SampleAfter(double step) -> double {
@@ -31,4 +32,4 @@ void MixerGenerator::Reset() {
     }
 }
 
-}
+}  // namespace wave_generator::synthesizer

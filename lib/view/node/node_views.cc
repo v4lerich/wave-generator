@@ -45,10 +45,9 @@ auto SignalSinkNodeView::CreateGenerators() const -> std::vector<SignalGenerator
             generators.push_back(std::move(generator));
         }
     } else {
-        std::transform(std::begin(channel_inputs_), std::end(channel_inputs_),
-                       std::back_inserter(generators), [&](const auto &channel_input) {
-                           return channel_input.CreateConnectedGenerator();
-                       });
+        std::transform(
+            std::begin(channel_inputs_), std::end(channel_inputs_), std::back_inserter(generators),
+            [&](const auto &channel_input) { return channel_input.CreateConnectedGenerator(); });
     }
     return generators;
 }
@@ -83,7 +82,8 @@ AmplitudeFrequencyGeneratorNodeView::AmplitudeFrequencyGeneratorNodeView(std::st
       amplitude_input_port_{this, "Amplitude"},
       frequency_input_port_{this, "Frequency"},
       base_amplitude_input_{this, "Base amplitude", {0.0, 1.0}, 0.5},
-      base_frequency_input_{this, "Base frequency", {0.1, 22000}, 1000, FloatInputView::Type::Logarithmic},
+      base_frequency_input_{
+          this, "Base frequency", {0.1, 22000}, 1000, FloatInputView::Type::Logarithmic},
       output_node_{this} {}
 
 auto AmplitudeFrequencyGeneratorNodeView::GenerateAmplitudeSignal() const
@@ -151,10 +151,9 @@ PulseGeneratorNodeView::PulseGeneratorNodeView(ImVec2 position)
 
 auto PulseGeneratorNodeView::CreateGenerator() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    return std::make_unique<synthesizer::PulseGenerator>(GetDutyCycle(),
-                                                        GetBaseAmplitude(), GetBaseFrequency(),
-                                                        GenerateAmplitudeSignal(),
-                                                        GenerateFrequencySignal());
+    return std::make_unique<synthesizer::PulseGenerator>(
+        GetDutyCycle(), GetBaseAmplitude(), GetBaseFrequency(), GenerateAmplitudeSignal(),
+        GenerateFrequencySignal());
 }
 
 auto PulseGeneratorNodeView::GetInputViews() -> std::list<NodeInputView *> {
@@ -180,7 +179,8 @@ TriangularGeneratorNodeView::TriangularGeneratorNodeView(ImVec2 position)
 
 auto TriangularGeneratorNodeView::CreateGenerator() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    return std::make_unique<synthesizer::TriangularGenerator>(GetBaseAmplitude(), GetBaseFrequency(), GenerateAmplitudeSignal(),
+    return std::make_unique<synthesizer::TriangularGenerator>(
+        GetBaseAmplitude(), GetBaseFrequency(), GenerateAmplitudeSignal(),
         GenerateFrequencySignal());
 }
 
@@ -200,9 +200,8 @@ auto WhiteNoiseGeneratorNodeView::GetInputViews() -> std::list<NodeInputView *> 
 
 auto WhiteNoiseGeneratorNodeView::CreateGenerator() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    return std::make_unique<synthesizer::WhiteNoiseGenerator>(
-        GetBaseAmplitude(), GenerateAmplitude()
-        );
+    return std::make_unique<synthesizer::WhiteNoiseGenerator>(GetBaseAmplitude(),
+                                                              GenerateAmplitude());
 }
 
 auto WhiteNoiseGeneratorNodeView::GetBaseAmplitude() const -> float {
@@ -216,14 +215,14 @@ auto WhiteNoiseGeneratorNodeView::GenerateAmplitude() const
 
 MixerGeneratorNodeView::MixerGeneratorNodeView(ImVec2 position)
     : SignalGeneratorNodeView{"Mixer", position},
-    input_counts_{this, "Input Counts", {1, 100}, 2},
-    output_node_{this, "Output"} {
+      input_counts_{this, "Input Counts", {1, 100}, 2},
+      output_node_{this, "Output"} {
     Refresh();
 }
 
 auto MixerGeneratorNodeView::GetInputViews() -> std::list<NodeInputView *> {
     std::list<NodeInputView *> inputs{&input_counts_};
-    for (auto& input : inputs_) {
+    for (auto &input : inputs_) {
         inputs.push_back(&input.coefficient_node);
         inputs.push_back(&input.input_node);
     }
@@ -237,7 +236,7 @@ auto MixerGeneratorNodeView::GetOutputViews() -> std::list<NodeOutputView *> {
 auto MixerGeneratorNodeView::CreateGenerator() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
     std::vector<synthesizer::MixerGenerator::MixerInputSignal> mixer_inputs;
-    for (auto& input : inputs_) {
+    for (auto &input : inputs_) {
         mixer_inputs.push_back({
             .coefficient = input.coefficient_node.GetValue(),
             .generator = input.input_node.CreateConnectedGenerator(),
@@ -250,7 +249,8 @@ void MixerGeneratorNodeView::Refresh() {
     while (inputs_.size() < GetInputCounts()) {
         int id = inputs_.size() + 1;
         inputs_.push_back({
-            .coefficient_node = FloatInputView{this, "Coefficient " + std::to_string(id), {0.0, 1.0}, 0.0},
+            .coefficient_node =
+                FloatInputView{this, "Coefficient " + std::to_string(id), {0.0, 1.0}, 0.0},
             .input_node = SignalPortInputView{this, "Input " + std::to_string(id)},
         });
     }
@@ -267,15 +267,15 @@ void MixerGeneratorNodeView::EndRender() { Refresh(); }
 
 void MixerGeneratorNodeView::BeginRender() {
     double coefficient_sum = 0;
-    for (auto& input : inputs_) {
+    for (auto &input : inputs_) {
         coefficient_sum += input.coefficient_node.GetValue();
     }
     if (std::abs(coefficient_sum) < kEpsilon) {
-        for (auto& input : inputs_) {
+        for (auto &input : inputs_) {
             input.coefficient_node.SetValue(1.0 / inputs_.size());
         }
     } else {
-        for (auto& input : inputs_) {
+        for (auto &input : inputs_) {
             input.coefficient_node.SetValue(input.coefficient_node.GetValue() / coefficient_sum);
         }
     }

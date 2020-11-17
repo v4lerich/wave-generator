@@ -37,6 +37,6 @@ class SignalSamplesGenerator {
     std::mutex mutex_{};
 };
 
-}
+}  // namespace wave_generator::model
 
 #endif  // WAVEGENERATOR_SIGNAL_SAMPLES_GENERATOR_H

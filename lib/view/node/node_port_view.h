@@ -42,6 +42,7 @@ class NodeInputView {
     auto GetName() const -> const std::string&;
 
     bool is_topology_changed_{};
+
   private:
     static auto GetID() -> int;
     static int counter_id_;

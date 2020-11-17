@@ -1,10 +1,11 @@
 #ifndef WAVEGENERATOR_NODE_PORT_VIEWS_H
 #define WAVEGENERATOR_NODE_PORT_VIEWS_H
 
+#include <signal_generator.h>
+
 #include <vector>
 
 #include "node_view.h"
-#include <signal_generator.h>
 
 namespace wave_generator::view::node {
 
@@ -24,10 +25,7 @@ class SignalPortInputView final : public NodeInputView {
 
 class FloatInputView final : public NodeInputView {
   public:
-    enum class Type {
-        Logarithmic,
-        Linear
-    };
+    enum class Type { Logarithmic, Linear };
     explicit FloatInputView(const NodeView* parent, std::string name, ImVec2 range = {0.0F, 1.0F},
                             float default_value = 1.0F, Type type = Type::Linear);
     auto GetValue() const -> float;
@@ -46,7 +44,7 @@ class IntInputView final : public NodeInputView {
   public:
     using Range = std::pair<int, int>;
     explicit IntInputView(const NodeView* parent, std::string name, Range range = {1, 1},
-                            int default_value = 1);
+                          int default_value = 1);
     auto GetValue() const -> int;
 
   protected:

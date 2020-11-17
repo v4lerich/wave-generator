@@ -8,13 +8,11 @@
 namespace wave_generator::synthesizer {
 
 AmplitudeFrequencyGenerator::AmplitudeFrequencyGenerator(
-    double base_amplitude, double base_frequency,
-    std::unique_ptr<SignalGenerator> amplitude_signal,
+    double base_amplitude, double base_frequency, std::unique_ptr<SignalGenerator> amplitude_signal,
     std::unique_ptr<SignalGenerator> frequency_signal)
     : base_amplitude_{base_amplitude}, base_frequency_{base_frequency} {
     if (frequency_signal) {
-        accumulated_position_shift_ =
-            std::make_unique<Integrator>(std::move(frequency_signal));
+        accumulated_position_shift_ = std::make_unique<Integrator>(std::move(frequency_signal));
     } else {
         accumulated_position_shift_ = std::make_unique<ConstantGenerator>(0);
     }
