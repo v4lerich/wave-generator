@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "node_view.h"
+#include <signal_generator.h>
 
 namespace wave_generator::view::node {
 
@@ -13,6 +14,7 @@ class SignalPortInputView final : public NodeInputView {
   public:
     explicit SignalPortInputView(const NodeView* parent, std::string name);
     auto GetConnectedSignalNode() const -> const SignalGeneratorNodeView*;
+    auto CreateConnectedGenerator() const -> std::unique_ptr<synthesizer::SignalGenerator>;
 
     bool CanConnect(const NodeOutputView* output) const override;
 
@@ -37,6 +39,21 @@ class FloatInputView final : public NodeInputView {
     ImVec2 range_;
     float value_;
     Type type_;
+};
+
+class IntInputView final : public NodeInputView {
+  public:
+    using Range = std::pair<int, int>;
+    explicit IntInputView(const NodeView* parent, std::string name, Range range = {1, 1},
+                            int default_value = 1);
+    auto GetValue() const -> int;
+
+  protected:
+    void RenderItem(ImDrawList* draw_list) override;
+
+  private:
+    Range range_;
+    int value_;
 };
 
 class SwitchInputView final : public NodeInputView {

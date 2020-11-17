@@ -1,6 +1,7 @@
 #include "node_views.h"
 
 #include <constant_generator.h>
+#include <mixer_generator.h>
 #include <pulse_generator.h>
 #include <sawtooth_generator.h>
 #include <sine_generator.h>
@@ -37,18 +38,14 @@ auto SignalSinkNodeView::GetInputViews() -> std::list<NodeInputView *> {
 auto SignalSinkNodeView::CreateGenerators() const -> std::vector<SignalGeneratorPtr> {
     std::vector<SignalGeneratorPtr> generators;
     if (mode_input_.GetCase() == "Same") {
-        auto connected_node = same_input_.GetConnectedSignalNode();
         for (auto &channel_input : channel_inputs_) {
-            auto generator =
-                (connected_node == nullptr) ? nullptr : connected_node->CreateGenerator();
+            auto generator = same_input_.CreateConnectedGenerator();
             generators.push_back(std::move(generator));
         }
     } else {
         std::transform(std::begin(channel_inputs_), std::end(channel_inputs_),
                        std::back_inserter(generators), [&](const auto &channel_input) {
-                           auto connected_node = channel_input.GetConnectedSignalNode();
-                           return (connected_node == nullptr) ? nullptr
-                                                              : connected_node->CreateGenerator();
+                           return channel_input.CreateConnectedGenerator();
                        });
     }
     return generators;
@@ -89,14 +86,12 @@ AmplitudeFrequencyGeneratorNodeView::AmplitudeFrequencyGeneratorNodeView(std::st
 
 auto AmplitudeFrequencyGeneratorNodeView::GenerateAmplitudeSignal() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    auto amplitude_node = amplitude_input_port_.GetConnectedSignalNode();
-    return (amplitude_node == nullptr) ? nullptr : amplitude_node->CreateGenerator();
+    return amplitude_input_port_.CreateConnectedGenerator();
 }
 
 auto AmplitudeFrequencyGeneratorNodeView::GenerateFrequencySignal() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    auto frequency_node = frequency_input_port_.GetConnectedSignalNode();
-    return (frequency_node == nullptr) ? nullptr : frequency_node->CreateGenerator();
+    return frequency_input_port_.CreateConnectedGenerator();
 }
 
 auto AmplitudeFrequencyGeneratorNodeView::GetBaseAmplitude() const -> float {
@@ -214,8 +209,58 @@ auto WhiteNoiseGeneratorNodeView::GetBaseAmplitude() const -> float {
 
 auto WhiteNoiseGeneratorNodeView::GenerateAmplitude() const
     -> std::unique_ptr<synthesizer::SignalGenerator> {
-    auto connected_node = amplitude_input_node_.GetConnectedSignalNode();
-    return connected_node != nullptr ? connected_node->CreateGenerator() : nullptr;
+    return amplitude_input_node_.CreateConnectedGenerator();
 }
+
+MixerGeneratorNodeView::MixerGeneratorNodeView(ImVec2 position)
+    : SignalGeneratorNodeView{"Mixer", position},
+    input_counts_{this, "Input Counts", {1, 100}, 2},
+    output_node_{this, "Output"} {
+    Refresh();
+}
+
+auto MixerGeneratorNodeView::GetInputViews() -> std::list<NodeInputView *> {
+    std::list<NodeInputView *> inputs{&input_counts_};
+    for (auto& input : inputs_) {
+        inputs.push_back(&input.coefficient_node);
+        inputs.push_back(&input.input_node);
+    }
+    return inputs;
+}
+
+auto MixerGeneratorNodeView::GetOutputViews() -> std::list<NodeOutputView *> {
+    return {&output_node_};
+}
+
+auto MixerGeneratorNodeView::CreateGenerator() const
+    -> std::unique_ptr<synthesizer::SignalGenerator> {
+    std::vector<synthesizer::MixerGenerator::MixerInputSignal> mixer_inputs;
+    for (auto& input : inputs_) {
+        mixer_inputs.push_back({
+            .coefficient = input.coefficient_node.GetValue(),
+            .generator = input.input_node.CreateConnectedGenerator(),
+        });
+    }
+    return std::make_unique<synthesizer::MixerGenerator>(std::move(mixer_inputs));
+}
+
+void MixerGeneratorNodeView::Refresh() {
+    while (inputs_.size() < GetInputCounts()) {
+        int id = inputs_.size() + 1;
+        inputs_.push_back({
+            .coefficient_node = FloatInputView{this, "Coefficient " + std::to_string(id), {0.0, 1.0}, 0.0},
+            .input_node = SignalPortInputView{this, "Input " + std::to_string(id)},
+        });
+    }
+
+    while (inputs_.size() > GetInputCounts()) {
+        inputs_.back().input_node.Disconnect();
+        inputs_.pop_back();
+    }
+}
+
+auto MixerGeneratorNodeView::GetInputCounts() -> int { return input_counts_.GetValue(); }
+
+void MixerGeneratorNodeView::EndRender() { Refresh(); }
 
 }  // namespace wave_generator::view::node

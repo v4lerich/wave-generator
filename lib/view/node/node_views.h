@@ -124,6 +124,30 @@ class WhiteNoiseGeneratorNodeView final : public SignalGeneratorNodeView {
     SignalPortOutputView output_node_;
 };
 
+class MixerGeneratorNodeView final : public SignalGeneratorNodeView {
+  public:
+    explicit MixerGeneratorNodeView(ImVec2 position = {});
+
+  protected:
+    void EndRender() override;
+    auto GetOutputViews() -> std::list<NodeOutputView *> override;
+    auto GetInputViews() -> std::list<NodeInputView *> override;
+    auto CreateGenerator() const -> std::unique_ptr<synthesizer::SignalGenerator> override;
+
+  private:
+    auto GetInputCounts() -> int;
+    void Refresh();
+
+    struct MixerInput {
+        FloatInputView coefficient_node;
+        SignalPortInputView input_node;
+    };
+
+    IntInputView input_counts_;
+    std::vector<MixerInput> inputs_{};
+    SignalPortOutputView output_node_;
+};
+
 }  // namespace wave_generator::view::node
 
 #endif  // WAVEGENERATOR_NODE_VIEWS_H

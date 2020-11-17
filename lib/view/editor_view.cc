@@ -36,6 +36,9 @@ EditorView::EditorView(model::SoundDevicePtr sound_device) {
     factory_storage_.RegisterFactory("White noise", [](ImVec2 position) {
         return std::make_shared<node::WhiteNoiseGeneratorNodeView>(position);
     });
+    factory_storage_.RegisterFactory("Mixer", [](ImVec2 position) {
+        return std::make_shared<node::MixerGeneratorNodeView>(position);
+    });
 }
 
 void EditorView::Render() {

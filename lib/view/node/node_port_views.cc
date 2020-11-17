@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "node_views.h"
+#include <algorithm>
 
 namespace wave_generator::view::node {
 
@@ -23,6 +24,12 @@ bool SignalPortInputView::CanConnect(const NodeOutputView* output) const {
     return dynamic_cast<const SignalPortOutputView*>(output) != nullptr;
 }
 
+auto SignalPortInputView::CreateConnectedGenerator() const
+    -> std::unique_ptr<synthesizer::SignalGenerator> {
+    auto connected_node = GetConnectedSignalNode();
+    return connected_node != nullptr ? connected_node->CreateGenerator() : nullptr;
+}
+
 FloatInputView::FloatInputView(const NodeView* parent, std::string name, ImVec2 range,
                                float default_value, Type type)
     : NodeInputView{parent, std::move(name)}, range_{range}, value_{default_value}, type_{type} {}
@@ -34,9 +41,29 @@ void FloatInputView::RenderItem(ImDrawList* draw_list) {
     if (type_ == Type::Logarithmic) {
         flags |= ImGuiSliderFlags_Logarithmic;
     }
-    if (ImGui::SliderFloat("", &value_, range_[0], range_[1], (GetName() + ": %.3f").c_str(), flags)) {
+    if (ImGui::SliderFloat("##slider", &value_, range_[0], range_[1], (GetName() + ": %.3f").c_str(), flags)) {
         is_topology_changed_ = true;
     }
+    if (ImGui::InputFloat("##input", &value_, 0.1, 1.0)) {
+        is_topology_changed_ = true;
+    }
+    value_ = std::clamp(value_, range_[0], range_[1]);
+}
+
+IntInputView::IntInputView(const NodeView* parent, std::string name, IntInputView::Range range,
+                           int default_value)
+                           : NodeInputView{parent, std::move(name), false}, range_{range}, value_{default_value} {}
+
+auto IntInputView::GetValue() const -> int { return value_; }
+
+void IntInputView::RenderItem(ImDrawList* draw_list) {
+    if (ImGui::SliderInt("##slider", &value_, range_.first, range_.second, (GetName() + ": %.3f").c_str())) {
+        is_topology_changed_ = true;
+    }
+    if (ImGui::InputInt("##input", &value_, 1, 100)) {
+        is_topology_changed_ = true;
+    }
+    value_ = std::clamp(value_, range_.first, range_.second);
 }
 
 SwitchInputView::SwitchInputView(const NodeView* parent, std::string name,
