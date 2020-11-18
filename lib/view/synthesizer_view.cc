@@ -16,7 +16,9 @@ static const model::SoundDevice::Config kSoundDeviceConfig = {
 SynthesizerView::SynthesizerView()
     : sound_device_{std::make_shared<model::SoundDevice>(kSoundDeviceConfig)},
       editor_view_{sound_device_},
-      player_view_{sound_device_} {}
+      wav_recorder_{std::make_shared<WavRecorderView>(std::bind(&SynthesizerView::CreateGenerators, this))},
+      player_view_{sound_device_, wav_recorder_} {
+}
 
 void SynthesizerView::Render() {
     if (!BeginDockingWindow()) return;
@@ -39,6 +41,8 @@ void SynthesizerView::Render() {
     }
 
     EndDockingWindow();
+
+    wav_recorder_->Render();
 }
 
 auto SynthesizerView::BeginDockingWindow() -> bool {

@@ -28,6 +28,7 @@ class SynthesizerView : public View {
     auto CreateGenerators() -> std::vector<SignalGeneratorPtr>;
 
     std::shared_ptr<model::SoundDevice> sound_device_;
+    std::shared_ptr<WavRecorderView> wav_recorder_;
     PlayerView player_view_;
     EditorView editor_view_;
 };
