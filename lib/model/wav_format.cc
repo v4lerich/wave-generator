@@ -51,9 +51,11 @@ void FmtWavChunk::Encode(std::ostream& os) const {
 
         WavChunk::Encode<uint16_t>(format_stream, extension_stream.tellp());
         format_stream << extension_stream.rdbuf();
+    } else {
+        WavChunk::Encode<uint16_t>(format_stream, 0);
     }
 
-    WavChunk::Encode(os, format_stream.tellp());
+    WavChunk::Encode<uint32_t>(os, format_stream.tellp());
     os << format_stream.rdbuf();
 }
 
@@ -84,10 +86,16 @@ void DataWavChunk<T>::Encode(std::ostream& os) const {
         WavChunk::Encode<uint8_t>(data_stream, 0);
     }
 
-    data_stream.flush();
-    auto pos = data_stream.tellp();
-    WavChunk::Encode<uint32_t>(os, pos);
+    WavChunk::Encode<uint32_t>(os, data_stream.tellp());
     os << data_stream.rdbuf();
+}
+
+FactWavChunk::FactWavChunk(size_t sample_length) : WavChunk{"fact"}, sample_length_{sample_length} {}
+
+void FactWavChunk::Encode(std::ostream& os) const {
+    WavChunk::Encode(os);
+    WavChunk::Encode<uint32_t>(os, 4);
+    WavChunk::Encode<uint32_t>(os, sample_length_);
 }
 
 WaveWavChunk::WaveWavChunk(std::vector<std::unique_ptr<WavChunk>> chunks)
@@ -101,7 +109,6 @@ void WaveWavChunk::Encode(std::ostream& os) const {
         chunk->Encode(chunks_stream);
     }
 
-    WavChunk::Encode<uint32_t>(os, chunks_stream.tellp());
     os << chunks_stream.rdbuf();
 }
 
@@ -131,14 +138,21 @@ void WavFormatEncoder::Encode(std::ostream& os, std::vector<WavSignalChannel<flo
         .extension = std::nullopt,
     };
 
+    size_t max_channel_length = 0;
+    for (auto& channel : channels) {
+        max_channel_length = std::max(max_channel_length, channel.size());
+    }
+
     auto format_chunk = std::make_unique<FmtWavChunk>(format);
+    auto fact_chunk = std::make_unique<FactWavChunk>(channels.size() * max_channel_length);
     auto data_chunk = std::make_unique<DataWavChunk<float>>(std::move(channels));
 
     std::vector<std::unique_ptr<WavChunk>> chunks;
     chunks.push_back(std::move(format_chunk));
+    chunks.push_back(std::move(fact_chunk));
     chunks.push_back(std::move(data_chunk));
-    auto wave_chunk = std::make_unique<WaveWavChunk>(std::move(chunks));
 
+    auto wave_chunk = std::make_unique<WaveWavChunk>(std::move(chunks));
     auto riff_chunk = std::make_unique<RiffWavChunk>(std::move(wave_chunk));
 
     riff_chunk->Encode(os);

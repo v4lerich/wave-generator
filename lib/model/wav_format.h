@@ -82,6 +82,15 @@ class DataWavChunk : public WavChunk {
     std::vector<WavSignalChannel<T>> channels_;
 };
 
+class FactWavChunk : public WavChunk {
+  public:
+    explicit FactWavChunk(size_t sample_length);
+    void Encode(std::ostream& os) const override;
+
+  private:
+    size_t sample_length_;
+};
+
 class WaveWavChunk : public WavChunk {
   public:
     explicit WaveWavChunk(std::vector<std::unique_ptr<WavChunk>> chunks);
