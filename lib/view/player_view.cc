@@ -3,8 +3,6 @@
 #include <IconsForkAwesome.h>
 #include <imgui.h>
 #include <pulse_generator.h>
-#include <sawtooth_generator.h>
-#include <sine_generator.h>
 
 #include <utility>
 

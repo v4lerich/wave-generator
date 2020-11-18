@@ -15,3 +15,9 @@
 [submodule "3rd_party/fork_awesome/Fork-Awesome"]
 	path = 3rd_party/fork_awesome/Fork-Awesome
 	url = https://github.com/ForkAwesome/Fork-Awesome
+[submodule "3rd_party/imgui_filedialog/ImGuiFileDialog"]
+	path = 3rd_party/imgui_filedialog/ImGuiFileDialog
+	url = https://github.com/aiekick/ImGuiFileDialog
+[submodule "3rd_party/dirent/dirent"]
+	path = 3rd_party/dirent/dirent
+	url = https://github.com/tronkko/dirent
