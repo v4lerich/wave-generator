@@ -11,7 +11,7 @@ void SoundRecorder::SetGenerator(size_t channel, SignalGeneratorPtr generator) {
     generators_[channel] = std::move(generator);
 }
 
-auto SoundRecorder::Record() -> SoundRecording {
+auto SoundRecorder::Record() const -> SoundRecording {
     SoundRecording recording = {
         .sample_rate = sample_rate_,
         .channels = std::vector<SoundRecording::SoundChannel>(channels_),
@@ -21,7 +21,8 @@ auto SoundRecorder::Record() -> SoundRecording {
     for (double time = 0; time < seconds_; time += step) {
         for (size_t channel = 0; channel < channels_; channel++) {
             auto& generator = generators_[channel];
-            recording.channels[channel].push_back(generator->SampleAfter(step));
+            auto sample = generator != nullptr ? generator->SampleAfter(step) : 0.0;
+            recording.channels[channel].push_back(sample);
         }
     }
     return recording;

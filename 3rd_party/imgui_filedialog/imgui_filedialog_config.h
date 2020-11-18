@@ -1,6 +1,10 @@
 #ifndef WAVEGENERATOR_IMGUI_FILEDIALOG_CONFIG_H
 #define WAVEGENERATOR_IMGUI_FILEDIALOG_CONFIG_H
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 // uncomment and modify defines under for customize ImGuiFileDialog
 
 #define MAX_FILE_DIALOG_NAME_BUFFER 1024
@@ -12,13 +16,13 @@
 // this mapping by default is for GLFW but you can use another
 #include <SDL.h>
 // Up key for explore to the top
-#define IGFD_KEY_UP SDLK_UP
+#define IGFD_KEY_UP SDL_SCANCODE_UP
 // Down key for explore to the bottom
-#define IGFD_KEY_DOWN SDLK_DOWN
+#define IGFD_KEY_DOWN SDL_SCANCODE_DOWN
 // Enter key for open directory
-#define IGFD_KEY_ENTER SDLK_ENTER
+#define IGFD_KEY_ENTER SDL_SCANCODE_RETURN
 // BackSpace for comming back to the last directory
-#define IGFD_KEY_BACKSPACE SDLK_BACKSPACE
+#define IGFD_KEY_BACKSPACE SDL_SCANCODE_DOWN
 
 // widget
 // filter combobox width

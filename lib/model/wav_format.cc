@@ -16,8 +16,9 @@ void WavChunk::Encode(std::ostream& os, const T& value) {
     if constexpr (std::is_integral_v<T>) {
         T temp_value = value;
         for (size_t i = 0; i < sizeof(T); i++) {
-            os << uint8_t(temp_value & 0xffU);
-            temp_value >>= sizeof(uint8_t);
+            char byte = char(temp_value & 0xffU);
+            os.write(&byte, 1);
+            temp_value >>= 8;
         }
     } else if constexpr (std::is_floating_point_v<T>) {
         auto temp_value = float(value);
@@ -34,7 +35,7 @@ FmtWavChunk::FmtWavChunk(WavFormat format) : WavChunk{"fmt "}, format_{format} {
 void FmtWavChunk::Encode(std::ostream& os) const {
     WavChunk::Encode(os);
 
-    std::stringstream format_stream(std::ios::binary);
+    std::stringstream format_stream;
     WavChunk::Encode<uint16_t>(format_stream, format_.format_tag);
     WavChunk::Encode(format_stream, format_.channels);
     WavChunk::Encode(format_stream, format_.sampling_rate);
@@ -43,7 +44,7 @@ void FmtWavChunk::Encode(std::ostream& os) const {
     WavChunk::Encode(format_stream, format_.bits_per_sample);
 
     if (const auto& extension = format_.extension; extension) {
-        std::stringstream extension_stream(std::ios::binary);
+        std::stringstream extension_stream;
         WavChunk::Encode(extension_stream, extension->valid_bits_per_sample);
         WavChunk::Encode(extension_stream, extension->channel_mask);
         WavChunk::Encode(extension_stream, extension->sub_format);
@@ -64,7 +65,7 @@ template <typename T>
 void DataWavChunk<T>::Encode(std::ostream& os) const {
     WavChunk::Encode(os);
 
-    std::stringstream data_stream(std::ios::binary);
+    std::stringstream data_stream;
 
     auto channels = channels_;
     size_t samples_count = 0;
@@ -83,7 +84,9 @@ void DataWavChunk<T>::Encode(std::ostream& os) const {
         WavChunk::Encode<uint8_t>(data_stream, 0);
     }
 
-    WavChunk::Encode<uint32_t>(os, data_stream.tellp());
+    data_stream.flush();
+    auto pos = data_stream.tellp();
+    WavChunk::Encode<uint32_t>(os, pos);
     os << data_stream.rdbuf();
 }
 
@@ -93,7 +96,7 @@ WaveWavChunk::WaveWavChunk(std::vector<std::unique_ptr<WavChunk>> chunks)
 void WaveWavChunk::Encode(std::ostream& os) const {
     WavChunk::Encode(os);
 
-    std::stringstream chunks_stream(std::ios::binary);
+    std::stringstream chunks_stream;
     for (const auto& chunk : chunks_) {
         chunk->Encode(chunks_stream);
     }
@@ -108,7 +111,7 @@ RiffWavChunk::RiffWavChunk(std::unique_ptr<WaveWavChunk> wave_chunk)
 void RiffWavChunk::Encode(std::ostream& os) const {
     WavChunk::Encode(os);
 
-    std::stringstream chunk_stream(std::ios::binary);
+    std::stringstream chunk_stream;
     wave_chunk_->Encode(chunk_stream);
 
     WavChunk::Encode<uint32_t>(os, chunk_stream.tellp());

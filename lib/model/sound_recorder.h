@@ -22,7 +22,7 @@ class SoundRecorder {
 
     SoundRecorder(uint32_t sample_rate, size_t channels, float seconds);
     void SetGenerator(size_t channel, SignalGeneratorPtr generator);
-    auto Record() -> SoundRecording;
+    auto Record() const -> SoundRecording;
 
   private:
     std::vector<SignalGeneratorPtr> generators_;
