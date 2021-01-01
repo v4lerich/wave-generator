@@ -15,7 +15,7 @@ PulseGenerator::PulseGenerator(double duty_cycle, double base_amplitude, double 
       duty_cycle_{duty_cycle} {}
 
 auto PulseGenerator::Evaluate(double phase) -> double {
-    return fmod(phase, 2 * M_PI) / (2 * M_PI) > duty_cycle_ ? -1.0 : 1.0;
+    return fmod(phase, 1.0f) / (1.0f) > duty_cycle_ ? -1.0 : 1.0;
 }
 
 }  // namespace wave_generator::synthesizer

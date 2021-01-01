@@ -2,10 +2,12 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/3rd_party/dirent/dirent" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rd_party/fork_awesome/Fork-Awesome" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rd_party/glad2_loader/glad" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rd_party/icon_font_headers/IconFontCppHeaders" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rd_party/imgui/imgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/3rd_party/imgui_filedialog/ImGuiFileDialog" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rd_party/sdl2/SDL" vcs="Git" />
   </component>
 </project>
