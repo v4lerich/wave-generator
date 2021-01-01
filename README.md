@@ -16,7 +16,7 @@ Now supports following generators:
 
 Created with [SDL2](https://www.libsdl.org/) and [ImGui](https://github.com/ocornut/imgui/).
 
-##How to build
+## How to build
 
 Requirements:
 * OpenGL >= 4.2, or otherwise:
