@@ -14,7 +14,7 @@ TriangularGenerator::TriangularGenerator(double base_amplitude, double base_freq
                                   std::move(frequency)) {}
 
 auto TriangularGenerator::Evaluate(double phase) -> double {
-    return 2 * M_PI * asin(sin(2 * M_PI * phase));
+    return M_2_PI * asin(sin(2 * M_PI * phase));
 }
 
 }  // namespace wave_generator::synthesizer
